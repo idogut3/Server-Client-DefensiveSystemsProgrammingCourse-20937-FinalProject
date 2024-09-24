@@ -1,5 +1,8 @@
 import socket
 
+from UserDataBase import UserDatabase
+
+
 class Server:
     def __init__(self, host):
         DEFAULT_PORT = "1256"
@@ -16,6 +19,8 @@ class Server:
             self.port = port
             self.host = host
             self.ADDR = (self.host, self.port)
+            self.database = UserDatabase()
+
 
     def check_existing_database(self):  # Question 3
         pass
