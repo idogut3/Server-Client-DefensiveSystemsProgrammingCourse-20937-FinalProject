@@ -26,7 +26,7 @@ class User:
 
 
 class UserDatabase:
-    def __init__(self, users_folders_directory_name):
+    def __init__(self, users_folders_directory_name="users"):
         self.users = dict()
         able_to_create_directory = database_utils.make_directory(users_folders_directory_name)
         if not able_to_create_directory:
