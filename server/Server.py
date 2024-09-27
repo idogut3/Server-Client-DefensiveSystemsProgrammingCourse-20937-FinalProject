@@ -1,6 +1,6 @@
 import socket
 
-from UserDataBase import UserDatabase
+from database.UserDataBase import UserDatabase
 
 
 class Server:
