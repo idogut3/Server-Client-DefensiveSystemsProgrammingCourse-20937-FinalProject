@@ -50,3 +50,11 @@ class UserDatabase:
                                 directory_path=user_directory_path)
 
         return True, encrypted_aes_key
+
+    def is_username_already_registered(self, username):
+        for user in self.users.values():
+            if user.get_name() == username:
+                return True
+        return False
+
+
