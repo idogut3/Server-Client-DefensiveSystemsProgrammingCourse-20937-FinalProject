@@ -57,4 +57,15 @@ class UserDatabase:
                 return True
         return False
 
+    def get_aes_key_by_username(self, username) -> tuple:
+        if not self.is_username_already_registered:
+            return False, ""
+        for user in self.users.values():
+            if user.get_name() == username:
+                return True, user.get_aes_key()
+
+
+
+
+
 

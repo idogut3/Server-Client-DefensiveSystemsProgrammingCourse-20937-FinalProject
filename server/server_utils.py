@@ -7,3 +7,5 @@ def calculate_checksum_value(file):
 
 def is_checksum_correct(user_checksum, file) -> bool:
     return user_checksum == calculate_checksum_value(file)
+
+
