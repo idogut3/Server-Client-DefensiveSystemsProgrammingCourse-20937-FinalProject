@@ -38,6 +38,16 @@ class Server:
     def handle_connection(self, conn, addr):
         pass
 
+    def accept_register_request(self, username):
+        if not self.database.is_username_already_registered(username):
+            pass
+            # user_public_key = get_user_public_key
+            # self.database.add_new_user_to_database(username, user_public_key)
+        else:
+            pass
+            # respond_with_error()
+
+
     def run(self):
         self.check_existing_database()
         while True:
