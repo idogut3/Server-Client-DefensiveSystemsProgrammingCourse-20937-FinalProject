@@ -41,11 +41,11 @@ class Server:
     def accept_register_request(self, username):
         if not self.database.is_username_already_registered(username):
             pass
-            # user_public_key = get_user_public_key
+            # user_public_key = request_user_public_key()
             # self.database.add_new_user_to_database(username, user_public_key)
         else:
             pass
-            # respond_with_error()
+            # reply_with_general_error()
 
 
     def run(self):
