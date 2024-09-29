@@ -1,6 +1,8 @@
 import socket
 
 from database.UserDataBase import UserDatabase
+from server.utils.protocols.ClientRequestProtocols.protocols import *
+from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 
 
 class Server:
@@ -20,6 +22,15 @@ class Server:
             self.host = host
             self.ADDR = (self.host, self.port)
             self.database = UserDatabase()
+            self.client_reply_protocols = {
+                ClientReplyCodes.REGISTER_REQUEST: RegisterRequestProtocol(self),
+                ClientReplyCodes.SEND_PUBLIC_KEY_REQUEST: SendPublicKeyRequestProtocol(self),
+                ClientReplyCodes.RECONNECT_TO_SERVER_REQUEST: ReconnectToServerRequestProtocol(self),
+                ClientReplyCodes.SEND_FILE_REQUEST: SendFileRequest(self),
+                ClientReplyCodes.ADEQUATE_CRC_VALUE: AdequateCrcValueProtocol(self),
+                ClientReplyCodes.INADEQUATE_CRC_VALUE: InadequateCrcValueProtocol(self),
+                ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME: InadequateCrcValueForTheForthTimeProtocol(self)
+            }
 
 
     def check_existing_database(self):  # Question 3
