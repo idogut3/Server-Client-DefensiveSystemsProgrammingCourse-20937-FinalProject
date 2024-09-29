@@ -12,18 +12,32 @@ class Protocol:
     def protocol(self, message) -> Reply:
         pass
 
+    @abstractmethod
+    def unpack_message(self, message):
+        pass
+
 
 class RegisterRequestProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
 
-    def protocol(self, message) -> Reply:
+    def unpack_message(self, message):
         pass
+
+    def protocol(self, message) -> Reply:
+        if not self.server.get_database().is_username_already_registered():
+            pass
+            # server.get_database().
+        else:
+            pass
 
 
 class SendPublicKeyRequestProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
+
+    def unpack_message(self, message):
+        pass
 
     def protocol(self, message) -> Reply:
         pass
@@ -33,6 +47,9 @@ class ReconnectToServerRequestProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
 
+    def unpack_message(self, message):
+        pass
+
     def protocol(self, message) -> Reply:
         pass
 
@@ -40,6 +57,9 @@ class ReconnectToServerRequestProtocol(Protocol):
 class SendFileRequest(Protocol):
     def __init__(self, message):
         super().__init__(message)
+
+    def unpack_message(self, message):
+        pass
 
     def protocol(self, message) -> Reply:
         pass
@@ -49,6 +69,9 @@ class AdequateCrcValueProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
 
+    def unpack_message(self, message):
+        pass
+
     def protocol(self, message) -> Reply:
         pass
 
@@ -57,6 +80,9 @@ class InadequateCrcValueProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
 
+    def unpack_message(self, message):
+        pass
+
     def protocol(self, message) -> Reply:
         pass
 
@@ -64,6 +90,9 @@ class InadequateCrcValueProtocol(Protocol):
 class InadequateCrcValueForTheForthTimeProtocol(Protocol):
     def __init__(self, message):
         super().__init__(message)
+
+    def unpack_message(self, message):
+        pass
 
     def protocol(self, message) -> Reply:
         pass

@@ -1,6 +1,6 @@
 import socket
 
-from database.UserDataBase import UserDatabase
+from server.database.UserDataBase import UserDatabase
 from server.utils.protocols.ClientRequestProtocols.protocols import *
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 
@@ -29,9 +29,12 @@ class Server:
                 ClientReplyCodes.SEND_FILE_REQUEST: SendFileRequest(self),
                 ClientReplyCodes.ADEQUATE_CRC_VALUE: AdequateCrcValueProtocol(self),
                 ClientReplyCodes.INADEQUATE_CRC_VALUE: InadequateCrcValueProtocol(self),
-                ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME: InadequateCrcValueForTheForthTimeProtocol(self)
+                ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME: InadequateCrcValueForTheForthTimeProtocol(
+                    self)
             }
 
+    def get_database(self):
+        return self.database
 
     def check_existing_database(self):  # Question 3
         pass
@@ -49,20 +52,7 @@ class Server:
     def handle_connection(self, conn, addr):
         pass
 
-    # def accept_register_request(self, username):
-    #     if not self.database.is_username_already_registered(username):
-    #         pass
-    #         # user_public_key = request_user_public_key()
-    #         # self.database.add_new_user_to_database(username, user_public_key)
-    #     else:
-    #         pass
-    #         # reply_with_general_error()
-
-
     def run(self):
         self.check_existing_database()
         while True:
             pass
-
-
-

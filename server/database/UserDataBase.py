@@ -1,4 +1,4 @@
-from database.utils import database_utils
+from server.database.utils import database_utils
 
 
 class User:

@@ -1,4 +1,4 @@
-from database.utils import checksum
+from server.database.utils import checksum
 
 
 def calculate_checksum_value(file):
