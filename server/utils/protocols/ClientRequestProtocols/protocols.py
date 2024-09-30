@@ -1,8 +1,8 @@
 import struct
 from abc import abstractmethod
-
-from server.utils.protocols.ClientRequestProtocols.Reply import Reply
+from server.utils.protocols.ClientRequestProtocols.Response import Response, Header
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
+from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 
 
 def unpack_message(message):
@@ -22,12 +22,12 @@ def unpack_message(message):
 
 
 class Protocol:
-    def __init__(self, server, conn):
+    def __init__(self, server, conn = ""):
         self.server = server
         self.conn = conn
 
     @abstractmethod
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -35,23 +35,48 @@ class RegisterRequestProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         message_dict = unpack_message(message)
         payload = message_dict["payload"]
         username = payload[:255].strip()
 
         if not self.server.get_database().is_username_already_registered(username):
-            pass
-            # server.get_database().
+            self.accept_register_request()
+            user_public_key = self.receive_public_key()
+            # Todo: more code here
+
         else:
-            pass
+            self.send_register_failed_reply()
+
+    def build_accept_register_request_reply(self) -> Response:
+        reply_header = Header(server_version=self.server.get_version(), response_code=ServerReplyCodes.REGISTERED_SUCCESSFULLY)
+        payload = None #TODO:: USER UUID PLEASE SOMEONE HELPME
+        reply = Response(header=reply_header, payload= payload)
+        return reply
+
+    def accept_register_request(self):
+        reply = self.build_accept_register_request_reply()
+        reply.response(self.conn)
+
+    def build_register_failed_reply(self) -> Response:
+        reply_header = Header(server_version=self.server.get_version(), response_code=ServerReplyCodes.REGISTRATION_FAILED)
+        reply = Response(reply_header)
+        return reply
+
+    def send_register_failed_reply(self):
+        reply = self.build_register_failed_reply()
+        reply.response(self.conn)
+
+    def receive_public_key(self):
+        message = ""
+        return message
 
 
 class SendPublicKeyRequestProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -59,7 +84,7 @@ class ReconnectToServerRequestProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -67,7 +92,7 @@ class SendFileRequest(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -75,7 +100,7 @@ class AdequateCrcValueProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -83,7 +108,7 @@ class InadequateCrcValueProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 
@@ -91,7 +116,7 @@ class InadequateCrcValueForTheForthTimeProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
-    def protocol(self, message) -> Reply:
+    def protocol(self, message):
         pass
 
 # TODO<not really todo>: EXAMPLE FOR FUTURE REFERENCE: #reply = client_reply_protocols[ClientReplyCodes.REGISTER_REQUEST](server).protocol(message)
