@@ -1,5 +1,8 @@
 import struct
 from abc import abstractmethod
+
+from Crypto.SelfTest.Protocol.test_ecdh import public_key
+
 from server.utils.protocols.ClientRequestProtocols.Response import Response, Header
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
@@ -22,7 +25,7 @@ def unpack_message(message):
 
 
 class Protocol:
-    def __init__(self, server, conn=""):
+    def __init__(self, server, conn):
         self.server = server
         self.conn = conn
 
@@ -78,8 +81,18 @@ class RegisterRequestProtocol(Protocol):
         reply.response(self.conn)
 
     def receive_public_key(self):
-        message = ""
-        return message
+        try:
+            # Receive the fixed-size header (16 + 1 + 2 + 4 = 23 bytes)
+            header_size = 23
+            header_data = self.conn.recv(header_size)
+
+            # Unpack the header
+            header_format = '<16sBHI'  # Little-endian: 16s (client_id), B (version), H (code), I (payload_size)
+            client_id, version, code, payload_size = struct.unpack(header_format, header_data)
+            # TODO: check that the code we got is the right code for get public key else throw an error I guess / Return False
+        except Exception as e:
+            pass
+        return public_key
 
 
 class SendPublicKeyRequestProtocol(Protocol):
