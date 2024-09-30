@@ -33,7 +33,7 @@ class Server:
                 ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME: InadequateCrcValueForTheForthTimeProtocol
             }
 
-    def get_database(self):
+    def get_database(self) -> UserDatabase:
         return self.database
 
     def get_version(self):

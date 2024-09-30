@@ -22,7 +22,7 @@ def unpack_message(message):
 
 
 class Protocol:
-    def __init__(self, server, conn = ""):
+    def __init__(self, server, conn=""):
         self.server = server
         self.conn = conn
 
@@ -41,25 +41,35 @@ class RegisterRequestProtocol(Protocol):
         username = payload[:255].strip()
 
         if not self.server.get_database().is_username_already_registered(username):
-            self.accept_register_request()
-            user_public_key = self.receive_public_key()
-            # Todo: more code here
-
+            accepted_register_request = self.accept_register_request(username)
+            if accepted_register_request:
+                user_public_key = self.receive_public_key()
+                # Todo: more code here
         else:
             self.send_register_failed_reply()
 
-    def build_accept_register_request_reply(self) -> Response:
-        reply_header = Header(server_version=self.server.get_version(), response_code=ServerReplyCodes.REGISTERED_SUCCESSFULLY)
-        payload = None #TODO:: USER UUID PLEASE SOMEONE HELPME
-        reply = Response(header=reply_header, payload= payload)
+    def build_accept_register_request_reply(self, uuid) -> Response:
+        reply_header = Header(server_version=self.server.get_version(),
+                              response_code=ServerReplyCodes.REGISTERED_SUCCESSFULLY)
+        payload_format = '<16s'
+        # The format string '<' indicates little-endian format.
+        # '16s' means a string of 16 bytes
+        payload = struct.pack(payload_format, uuid.encode('utf-8'))
+        reply = Response(header=reply_header, payload=payload)
         return reply
 
-    def accept_register_request(self):
-        reply = self.build_accept_register_request_reply()
+    def accept_register_request(self, username) -> bool:
+        was_able_to_add_user, uuid = self.server.get_database().add_new_user_to_database(username=username)
+        if not was_able_to_add_user:
+            self.send_register_failed_reply()
+            return False
+        reply = self.build_accept_register_request_reply(uuid)
         reply.response(self.conn)
+        return True
 
     def build_register_failed_reply(self) -> Response:
-        reply_header = Header(server_version=self.server.get_version(), response_code=ServerReplyCodes.REGISTRATION_FAILED)
+        reply_header = Header(server_version=self.server.get_version(),
+                              response_code=ServerReplyCodes.REGISTRATION_FAILED)
         reply = Response(reply_header)
         return reply
 
