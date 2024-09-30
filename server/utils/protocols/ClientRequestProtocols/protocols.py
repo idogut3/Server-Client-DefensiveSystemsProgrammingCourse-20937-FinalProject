@@ -13,17 +13,18 @@ def unpack_message(message):
     payload_size = struct.unpack("<I", message[19:23])[0]  # 4 bytes for Payload size (little-endian)
     payload = message[23:23 + payload_size]  # Extract the payload of given size
     return {
-        "client_id": client_id,
-        "version": version,
+        "client_id": client_id.decode('utf-8', 'ignore'),
+        "version": version.decode('utf-8', 'ignore'),
         "code": int.from_bytes(code, 'little'),
         "payload_size": payload_size,
-        "payload": payload
+        "payload": payload.decode('utf-8', 'ignore')
     }
 
 
 class Protocol:
-    def __init__(self, server):
+    def __init__(self, server, conn):
         self.server = server
+        self.conn = conn
 
     @abstractmethod
     def protocol(self, message) -> Reply:
@@ -31,12 +32,15 @@ class Protocol:
 
 
 class RegisterRequestProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
+        message_dict = unpack_message(message)
+        payload = message_dict["payload"]
+        username = payload[:255].strip()
 
-        if not self.server.get_database().is_username_already_registered():
+        if not self.server.get_database().is_username_already_registered(username):
             pass
             # server.get_database().
         else:
@@ -44,48 +48,48 @@ class RegisterRequestProtocol(Protocol):
 
 
 class SendPublicKeyRequestProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
 
 
 class ReconnectToServerRequestProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
 
 
 class SendFileRequest(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
 
 
 class AdequateCrcValueProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
 
 
 class InadequateCrcValueProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
 
 
 class InadequateCrcValueForTheForthTimeProtocol(Protocol):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message, conn):
+        super().__init__(message, conn)
 
     def protocol(self, message) -> Reply:
         pass
