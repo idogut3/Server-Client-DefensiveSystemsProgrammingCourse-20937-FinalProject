@@ -25,12 +25,8 @@ class Server:
             self.version = 3
             self.client_reply_protocols = {
                 ClientReplyCodes.REGISTER_REQUEST: RegisterRequestProtocol,
-                ClientReplyCodes.SEND_PUBLIC_KEY_REQUEST: SendPublicKeyRequestProtocol,
                 ClientReplyCodes.RECONNECT_TO_SERVER_REQUEST: ReconnectToServerRequestProtocol,
-                ClientReplyCodes.SEND_FILE_REQUEST: SendFileRequest,
-                ClientReplyCodes.ADEQUATE_CRC_VALUE: AdequateCrcValueProtocol,
-                ClientReplyCodes.INADEQUATE_CRC_VALUE: InadequateCrcValueProtocol,
-                ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME: InadequateCrcValueForTheForthTimeProtocol
+                ClientReplyCodes.SEND_FILE_REQUEST: SendFileRequestProtocol,
             }
 
     def get_database(self) -> UserDatabase:

@@ -129,7 +129,7 @@ class RegisterRequestProtocol(Protocol):
         return Response(reply_header, packed_payload)
 
 
-class SendPublicKeyRequestProtocol(Protocol):
+class SendFileRequestProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
@@ -138,38 +138,6 @@ class SendPublicKeyRequestProtocol(Protocol):
 
 
 class ReconnectToServerRequestProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
-
-    def protocol(self, message):
-        pass
-
-
-class SendFileRequest(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
-
-    def protocol(self, message):
-        pass
-
-
-class AdequateCrcValueProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
-
-    def protocol(self, message):
-        pass
-
-
-class InadequateCrcValueProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
-
-    def protocol(self, message):
-        pass
-
-
-class InadequateCrcValueForTheForthTimeProtocol(Protocol):
     def __init__(self, message, conn):
         super().__init__(message, conn)
 
