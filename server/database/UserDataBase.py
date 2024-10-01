@@ -1,4 +1,5 @@
 from server.database.utils import database_utils
+from server.database.utils.database_utils import compute_new_aes_key, encrypt_aes_key_with_public_key
 
 
 class User:
@@ -20,6 +21,9 @@ class User:
 
     def set_public_key(self, public_key):
         self.public_key = public_key
+
+    def set_aes_key(self, aes_key):
+        self.aes_key = aes_key
 
     def get_aes_key(self):
         return self.aes_key
@@ -58,9 +62,12 @@ class UserDatabase:
                 return True
         return False
 
-    def get_aes_key_by_username(self, username) -> tuple:
-        if not self.is_username_already_registered:
-            return False, ""
+    def set_new_user_public_key(self, username, public_key):
         for user in self.users.values():
             if user.get_name() == username:
-                return True, user.get_aes_key()
+                user.set_public_key(public_key)
+                aes_key = compute_new_aes_key()
+                user.set_aes_key(aes_key)
+                encrypted_aes_key = encrypt_aes_key_with_public_key(aes_key, public_key)
+                return encrypted_aes_key
+        return ""  # In case of an error
