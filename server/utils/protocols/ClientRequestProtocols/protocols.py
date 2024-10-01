@@ -155,8 +155,14 @@ class SendFileRequestProtocol(Protocol):
         payload = message_dict["payload"]
         encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
             unpack_send_file_payload(payload)
+        #TODO: more code here .........
 
+    def notify_user_file_received_successfully(self):
+        reply = self.build_user_file_received_successfully_reply()
+        reply.response(self.conn)
 
+    def build_user_file_received_successfully_reply(self) -> Response:
+        pass
 class ReconnectToServerRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
