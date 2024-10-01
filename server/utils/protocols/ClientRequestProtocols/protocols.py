@@ -137,12 +137,13 @@ def unpack_send_file_payload(payload):
     message_format = '<I I H H'
 
     # Unpack first 12 bytes
-    content_size, original_file_size, packet_number, total_packets = struct.unpack(message_format, payload[:12])
+    encrypted_content_size, original_file_size, packet_number, total_packets = struct.unpack(message_format,
+                                                                                             payload[:12])
     # file_name is 255 bytes 255 + previous 12 bytes = 267
     file_name = payload[12:267].decode('utf-8', 'ignore').rstrip('\x00')
-    message_content = payload[267:].decode('utf-8', 'ignore')
+    encrypted_message_content = payload[267:].decode('utf-8', 'ignore')
 
-    return content_size, original_file_size, packet_number, total_packets, file_name, message_content
+    return encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
 
 
 class SendFileRequestProtocol(Protocol):
@@ -152,7 +153,7 @@ class SendFileRequestProtocol(Protocol):
     def protocol(self, message):
         message_dict = unpack_message(message)
         payload = message_dict["payload"]
-        content_size, original_file_size, packet_number, total_packets, file_name, message_content = \
+        encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
             unpack_send_file_payload(payload)
 
 
