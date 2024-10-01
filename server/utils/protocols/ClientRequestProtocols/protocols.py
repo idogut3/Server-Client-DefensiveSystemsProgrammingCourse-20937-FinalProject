@@ -32,8 +32,8 @@ class Protocol:
 
 
 class RegisterRequestProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
+    def __init__(self, server, conn):
+        super().__init__(server, conn)
 
     def protocol(self, message) -> bool:
         message_dict = unpack_message(message)
@@ -130,16 +130,16 @@ class RegisterRequestProtocol(Protocol):
 
 
 class SendFileRequestProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
+    def __init__(self, server, conn):
+        super().__init__(server, conn)
 
     def protocol(self, message):
         pass
 
 
 class ReconnectToServerRequestProtocol(Protocol):
-    def __init__(self, message, conn):
-        super().__init__(message, conn)
+    def __init__(self, server, conn):
+        super().__init__(server, conn)
 
     def protocol(self, message):
         pass
