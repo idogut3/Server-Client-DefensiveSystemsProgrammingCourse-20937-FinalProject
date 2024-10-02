@@ -162,7 +162,12 @@ class SendFileRequestProtocol(Protocol):
         reply.response(self.conn)
 
     def build_user_file_received_successfully_reply(self) -> Response:
-        pass
+        # 16 bytes (client_id) + 4 bytes (content_size) + 255 bytes (file_name) + 4 bytes (checksum_value) = 279 (payload size)
+        payload_size = 279
+        reply_header = Header(server_version=self.server.get_version(),
+                              response_code=ServerReplyCodes.FILE_RECEIVED_SUCCESSFULLY_WITH_CRC,
+                              payload_size=payload_size)
+        #TODO: add payload correctly AAAAAAAAAAAAAAA
 
 
 class ReconnectToServerRequestProtocol(Protocol):
