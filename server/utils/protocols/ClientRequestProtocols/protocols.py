@@ -125,7 +125,7 @@ class RegisterRequestProtocol(Protocol):
                               response_code=ServerReplyCodes.PUBLIC_KEY_RECEIVED_SENDING_ENCRYPTED_AES_KEY,
                               payload_size=len(encrypted_aes_key))
         payload_format = f'16s{len(encrypted_aes_key)}s'  # Create the format string based 16 byte uuid and the length of the encrypted_aes_key
-        packed_payload = struct.pack(payload_format, uuid, encrypted_aes_key)
+        packed_payload = struct.pack(payload_format, uuid.encode('utf-8'), encrypted_aes_key.encode('utf-8'))
         return Response(reply_header, packed_payload)
 
 
@@ -168,6 +168,8 @@ class SendFileRequestProtocol(Protocol):
                               response_code=ServerReplyCodes.FILE_RECEIVED_SUCCESSFULLY_WITH_CRC,
                               payload_size=payload_size)
         #TODO: add payload correctly AAAAAAAAAAAAAAA
+        message_format = '<16s I 255s I'  # Format string: 16 bytes for Client ID, 4 bytes for Content Size, 255 bytes for File Name, 4 bytes for Cksum
+        #packed_message = struct.pack(message_format, client_id, content_size, file_name_bytes, cksum)
 
 
 class ReconnectToServerRequestProtocol(Protocol):
