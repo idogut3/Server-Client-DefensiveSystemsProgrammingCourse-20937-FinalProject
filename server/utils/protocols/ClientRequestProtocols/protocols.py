@@ -1,4 +1,5 @@
 import struct
+import io
 from abc import abstractmethod
 from server.utils.protocols.ClientRequestProtocols.Response import Response, Header
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
@@ -157,6 +158,13 @@ class SendFileRequestProtocol(Protocol):
             unpack_send_file_payload(payload)
         # TODO: more code here .........
 
+    def receive_file_calculate_crc(self, file_size):
+        pass
+        # file = self.conn.recv(file_size)
+        # file_pointer = io.BytesIO(file)
+        # read_content = file_pointer.read()
+        # return calculate_checksum_value(read_content)
+
     def notify_user_file_received_successfully(self):
         reply = self.build_user_file_received_successfully_reply()
         reply.response(self.conn)
@@ -169,7 +177,7 @@ class SendFileRequestProtocol(Protocol):
                               payload_size=payload_size)
         #TODO: add payload correctly AAAAAAAAAAAAAAA
         message_format = '<16s I 255s I'  # Format string: 16 bytes for Client ID, 4 bytes for Content Size, 255 bytes for File Name, 4 bytes for Cksum
-        #packed_message = struct.pack(message_format, client_id, content_size, file_name_bytes, cksum)
+        packed_message = struct.pack(message_format, client_id, content_size, file_name_bytes, cksum)
 
 
 class ReconnectToServerRequestProtocol(Protocol):
