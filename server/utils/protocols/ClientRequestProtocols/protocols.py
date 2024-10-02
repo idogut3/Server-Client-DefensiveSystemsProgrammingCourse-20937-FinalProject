@@ -14,7 +14,7 @@ def unpack_message(message):
     payload = message[23:23 + payload_size]  # Extract the payload of given size
     return {
         "client_id": client_id.decode('utf-8', 'ignore'),
-        "version": version.decode('utf-8', 'ignore'),
+        "version": version.decode('utf-8', 'ignore'), #TODO: CHANGE TO UNPACK AS AN INTEGER
         "code": int.from_bytes(code, 'little'),
         "payload_size": payload_size,
         "payload": payload.decode('utf-8', 'ignore')
