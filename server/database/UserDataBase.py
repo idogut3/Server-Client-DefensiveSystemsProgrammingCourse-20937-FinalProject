@@ -1,5 +1,6 @@
 from server.database.utils import database_utils
-from server.database.utils.database_utils import compute_new_aes_key, encrypt_aes_key_with_public_key
+from server.database.utils.database_utils import compute_new_aes_key
+from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import encrypt_aes_key_with_public_key
 
 
 class User:
@@ -71,3 +72,10 @@ class UserDatabase:
                 encrypted_aes_key = encrypt_aes_key_with_public_key(aes_key, public_key)
                 return encrypted_aes_key
         return ""  # In case of an error
+
+    def get_aes_key_by_uuid(self, client_id):
+        for user in self.users.values():
+            if user.get_uuid() == client_id:
+                return user.get_aes_key()
+        return ""  # In case of an error
+
