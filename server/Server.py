@@ -1,7 +1,7 @@
 import socket
 
 from server.database.UserDataBase import UserDatabase
-from server.utils.protocols.ClientRequestProtocols.protocols import *
+from server.utils.protocols.protocols import *
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 
 

@@ -1,11 +1,12 @@
 import struct
-import io
 from abc import abstractmethod
 
-from server.utils.protocols.ClientRequestProtocols.Response import Response, Header
+from server.utils.protocols.Response import Response, Header
+from server.utils.protocols.send_file_request.message_handling import \
+    receive_relevant_values_from_message
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
-from server.utils.protocols.protocol_utils.send_file_protocol_utils import calculate_checksum_value
+from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
 from server.utils.server_utils import unpack_message
 from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import decrypt_file_with_aes_key
 
@@ -118,33 +119,15 @@ class RegisterRequestProtocol(Protocol):
         return Response(reply_header, packed_payload)
 
 
-def unpack_send_file_payload(payload):
-    # < is for little-endian format
-    # I: Unsigned 4-byte integer (Content Size, Original File Size)
-    # H: Unsigned 2-byte integer (Packet Number, Total Packets)
-    # 255s: File Name (255 bytes)
-    message_format = '<I I H H'
-
-    # Unpack first 12 bytes
-    encrypted_content_size, original_file_size, packet_number, total_packets = struct.unpack(message_format,
-                                                                                             payload[:12])
-    # file_name is 255 bytes 255 + previous 12 bytes = 267
-    file_name = payload[12:267].decode('utf-8', 'ignore').rstrip('\x00')
-    encrypted_message_content = payload[267:].decode('utf-8', 'ignore')
-
-    return encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
-
 
 class SendFileRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
 
     def protocol(self, message):
-        message_dict = unpack_message(message)
-        client_id = message_dict["client_id"]
-        payload = message_dict["payload"]
-        encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
-            unpack_send_file_payload(payload)
+        client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
+            receive_relevant_values_from_message(message)
+
         user_aes_key = self.server.get_database.get_aes_key_by_uuid(client_id)
         decrypted_message_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
         file_checksum_value = calculate_checksum_value(decrypted_message_content)
