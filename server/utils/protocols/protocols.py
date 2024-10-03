@@ -119,12 +119,16 @@ class RegisterRequestProtocol(Protocol):
         return Response(reply_header, packed_payload)
 
 
-
 class SendFileRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
 
     def protocol(self, message):
+        self.handle_send_file_request_message(message)
+
+        # TODO: more code here .........
+
+    def handle_send_file_request_message(self, message):
         client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
             receive_relevant_values_from_message(message)
 
@@ -132,7 +136,6 @@ class SendFileRequestProtocol(Protocol):
         decrypted_message_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
         file_checksum_value = calculate_checksum_value(decrypted_message_content)
         self.send_user_file_received_message(client_id, encrypted_content_size, file_name, file_checksum_value)
-        # TODO: more code here .........
 
     def send_user_file_received_message(self, client_id, encrypted_content_size, file_name, file_checksum_value):
         reply = self.build_user_file_received_message_reply(client_id, encrypted_content_size, file_name,
