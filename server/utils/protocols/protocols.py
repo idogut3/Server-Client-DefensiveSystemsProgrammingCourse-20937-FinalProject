@@ -1,6 +1,8 @@
 import struct
 from abc import abstractmethod
 
+from Crypto.SelfTest.Cipher.test_CBC import file_name
+
 from server.utils.protocols.Response import Response, Header
 from server.utils.protocols.send_file_request.message_handling import \
     extract_relevant_values_from_message, get_message_file_name
@@ -124,8 +126,9 @@ class SendFileRequestProtocol(Protocol):
         super().__init__(server, conn)
 
     def protocol(self, message):
-        self.handle_send_file_request_message(message)
-        file_name = get_message_file_name(message)
+        message_dict = self.handle_send_file_request_message(message)
+        message_file_name = message_dict["file_name"]
+        decrypted_file_content = message_dict["decrypted_file_content"]
 
         # TODO: more code here .........
 
@@ -134,9 +137,10 @@ class SendFileRequestProtocol(Protocol):
             extract_relevant_values_from_message(message)
 
         user_aes_key = self.server.get_database.get_aes_key_by_uuid(client_id)
-        decrypted_message_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
-        file_checksum_value = calculate_checksum_value(decrypted_message_content)
+        decrypted_file_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
+        file_checksum_value = calculate_checksum_value(decrypted_file_content)
         self.send_user_file_received_message(client_id, encrypted_content_size, file_name, file_checksum_value)
+        return {"file_name": file_name, "decrypted_file_content": decrypted_file_content}
 
     def send_user_file_received_message(self, client_id, encrypted_content_size, file_name, file_checksum_value):
         reply = self.build_user_file_received_message_reply(client_id, encrypted_content_size, file_name,
