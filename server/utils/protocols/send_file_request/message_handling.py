@@ -1,3 +1,5 @@
+import struct
+
 from server.utils.server_utils import unpack_message
 
 
@@ -25,4 +27,11 @@ def extract_relevant_values_from_message(message):
     encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
         unpack_send_file_payload(payload)
     return client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
+
+def get_message_file_name(message):
+    message_dict = unpack_message(message)
+    payload = message_dict["payload"]
+    file_name = payload[12:267].decode('utf-8', 'ignore').rstrip('\x00')
+    return file_name
+
 

@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from server.utils.protocols.Response import Response, Header
 from server.utils.protocols.send_file_request.message_handling import \
-    extract_relevant_values_from_message
+    extract_relevant_values_from_message, get_message_file_name
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
@@ -125,6 +125,7 @@ class SendFileRequestProtocol(Protocol):
 
     def protocol(self, message):
         self.handle_send_file_request_message(message)
+        file_name = get_message_file_name(message)
 
         # TODO: more code here .........
 
