@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from server.utils.protocols.Response import Response, Header
 from server.utils.protocols.send_file_request.message_handling import \
-    receive_relevant_values_from_message
+    extract_relevant_values_from_message
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
@@ -130,7 +130,7 @@ class SendFileRequestProtocol(Protocol):
 
     def handle_send_file_request_message(self, message):
         client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
-            receive_relevant_values_from_message(message)
+            extract_relevant_values_from_message(message)
 
         user_aes_key = self.server.get_database.get_aes_key_by_uuid(client_id)
         decrypted_message_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)

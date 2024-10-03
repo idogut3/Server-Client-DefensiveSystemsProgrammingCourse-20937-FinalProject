@@ -18,7 +18,7 @@ def unpack_send_file_payload(payload):
     return encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
 
 
-def receive_relevant_values_from_message(message):
+def extract_relevant_values_from_message(message):
     message_dict = unpack_message(message)
     client_id = message_dict["client_id"]
     payload = message_dict["payload"]
