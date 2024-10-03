@@ -133,21 +133,22 @@ class SendFileRequestProtocol(Protocol):
         # TODO: more code here .........
 
     def handle_send_file_request_message(self, message):
-        client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
+        client_id, encrypted_content_size, original_file_size, packet_number, total_packets, message_file_name, encrypted_message_content = \
             extract_relevant_values_from_message(message)
 
         user_aes_key = self.server.get_database.get_aes_key_by_uuid(client_id)
         decrypted_file_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
         file_checksum_value = calculate_checksum_value(decrypted_file_content)
-        self.send_user_file_received_message(client_id, encrypted_content_size, file_name, file_checksum_value)
-        return {"file_name": file_name, "decrypted_file_content": decrypted_file_content}
+        self.send_user_file_received_message(client_id, encrypted_content_size, message_file_name, file_checksum_value)
+        return {"file_name": message_file_name, "decrypted_file_content": decrypted_file_content}
 
-    def send_user_file_received_message(self, client_id, encrypted_content_size, file_name, file_checksum_value):
-        reply = self.build_user_file_received_message_reply(client_id, encrypted_content_size, file_name,
+    def send_user_file_received_message(self, client_id, encrypted_content_size, message_file_name,
+                                        file_checksum_value):
+        reply = self.build_user_file_received_message_reply(client_id, encrypted_content_size, message_file_name,
                                                             file_checksum_value)
         reply.response(self.conn)
 
-    def build_user_file_received_message_reply(self, client_id, encrypted_content_size, file_name,
+    def build_user_file_received_message_reply(self, client_id, encrypted_content_size, message_file_name,
                                                file_checksum_value) -> Response:
         # 16 bytes (client_id) + 4 bytes (encrypted_content_size) + 255 bytes (file_name) + 4 bytes (checksum_value) = 279 (payload size)
         payload_size = 279
@@ -157,7 +158,7 @@ class SendFileRequestProtocol(Protocol):
         # Format string: 16 bytes for Client ID, 4 bytes for encrypted content Size, 255 bytes for File Name, 4 bytes for Checksum
         message_format = '<16s I 255s I'
         client_id_bytes = client_id.encode("utf-8")
-        file_name_bytes = file_name.encode("utf-8")
+        file_name_bytes = message_file_name.encode("utf-8")
         packed_payload = struct.pack(message_format, client_id_bytes, encrypted_content_size, file_name_bytes,
                                      file_checksum_value)
         return Response(reply_header, packed_payload)
