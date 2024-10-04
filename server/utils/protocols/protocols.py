@@ -1,7 +1,8 @@
 import struct
 from abc import abstractmethod
 
-from server.utils.protocols.Response import Response, Header
+from server.utils.protocols.Request import ClientMessageHeader, Request
+from server.utils.protocols.Response import Response, ServerMessageHeader
 from server.utils.protocols.send_file_request.message_handling import \
     extract_relevant_values_from_send_file_request_message, \
     extract_relevant_values_from_crc_conformation_message_as_dict
@@ -55,8 +56,8 @@ class RegisterRequestProtocol(Protocol):
             return False
 
     def build_accept_register_request_reply(self, uuid) -> Response:
-        reply_header = Header(server_version=self.server.get_version(),
-                              response_code=ServerReplyCodes.REGISTERED_SUCCESSFULLY)
+        reply_header = ServerMessageHeader(server_version=self.server.get_version(),
+                                           response_code=ServerReplyCodes.REGISTERED_SUCCESSFULLY)
         payload_format = '<16s'
         # The format string '<' indicates little-endian format.
         # '16s' means a string of 16 bytes
@@ -74,8 +75,8 @@ class RegisterRequestProtocol(Protocol):
         return True, uuid
 
     def build_register_failed_reply(self) -> Response:
-        reply_header = Header(server_version=self.server.get_version(),
-                              response_code=ServerReplyCodes.REGISTRATION_FAILED)
+        reply_header = ServerMessageHeader(server_version=self.server.get_version(),
+                                           response_code=ServerReplyCodes.REGISTRATION_FAILED)
         reply = Response(reply_header)
         return reply
 
@@ -112,9 +113,9 @@ class RegisterRequestProtocol(Protocol):
         reply.response(self.conn)
 
     def build_send_encrypted_aes_key_reply(self, uuid, encrypted_aes_key) -> Response:
-        reply_header = Header(server_version=self.server.get_version(),
-                              response_code=ServerReplyCodes.PUBLIC_KEY_RECEIVED_SENDING_ENCRYPTED_AES_KEY,
-                              payload_size=len(encrypted_aes_key))
+        reply_header = ServerMessageHeader(server_version=self.server.get_version(),
+                                           response_code=ServerReplyCodes.PUBLIC_KEY_RECEIVED_SENDING_ENCRYPTED_AES_KEY,
+                                           payload_size=len(encrypted_aes_key))
         payload_format = f'16s{len(encrypted_aes_key)}s'  # Create the format string based 16 byte uuid and the length of the encrypted_aes_key
         packed_payload = struct.pack(payload_format, uuid.encode('utf-8'), encrypted_aes_key.encode('utf-8'))
         return Response(reply_header, packed_payload)
@@ -130,9 +131,19 @@ class SendFileRequestProtocol(Protocol):
         decrypted_file_content = message_dict["decrypted_file_content"]
         # TODO: more code here .........
         client_crc_conformation_message = self.receive_client_crc_conformation_message()
+    #
+    # def receive_send_file_request_message(self) -> Request:
+    #     #todo: header = ClientMessageHeader.receive_request_header(conn=self.conn)
+    #     payload_size = header.get_payload_size()
+    #     payload = self.receive_send_file_request_message_payload(payload_size)
+    #     return Request(header, payload)
+
+    def receive_send_file_request_message_payload(self, payload_size):
+        return self.conn.recv(payload_size)
 
     def receive_client_crc_conformation_message(self):
-        # client_id -> 16 bytes + version -> 1 byte  + Code -> 2 bytes + payload size -> 4 bytes + file_name -> 255 bytes
+        # client_id ->
+        # 16 bytes + version -> 1 byte  + Code -> 2 bytes + payload size -> 4 bytes + file_name -> 255 bytes
         client_crc_conformation_message_length = 278
         client_crc_conformation_message = self.conn.recv(client_crc_conformation_message_length)
         return client_crc_conformation_message
@@ -148,7 +159,10 @@ class SendFileRequestProtocol(Protocol):
         # TODO: checks for client id, file name ect ect ...
 
         if code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
-            self.server.get_database().save_file(client_id, conformation_reply_file_name, decrypted_file_content)
+            managed_to_save_file = self.server.get_database().save_file(client_id, conformation_reply_file_name,
+                                                                        decrypted_file_content)
+            if not managed_to_save_file:
+                pass  # TODO: general error message
             self.send_receive_message_thanks(client_id)
         elif code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
             pass  # TODO::::::
@@ -158,8 +172,8 @@ class SendFileRequestProtocol(Protocol):
         reply.response(self.conn)
 
     def build_receive_message_thanks_reply(self, client_id) -> Response:
-        reply_header = Header(server_version=self.server.get_version(),
-                              response_code=ServerReplyCodes.RECEIVE_MESSAGE_THANKS, payload_size=16)
+        reply_header = ServerMessageHeader(server_version=self.server.get_version(),
+                                           response_code=ServerReplyCodes.RECEIVE_MESSAGE_THANKS, payload_size=16)
         payload = client_id.encode("utf-8")
         reply = Response(reply_header, payload=payload)
         return reply
@@ -182,12 +196,14 @@ class SendFileRequestProtocol(Protocol):
 
     def build_user_file_received_message_reply(self, client_id, encrypted_content_size, message_file_name,
                                                file_checksum_value) -> Response:
-        # 16 bytes (client_id) + 4 bytes (encrypted_content_size) + 255 bytes (file_name) + 4 bytes (checksum_value) = 279 (payload size)
+        # 16 bytes (client_id) + 4 bytes (encrypted_content_size) + 255 bytes (file_name) + 4 bytes (checksum_value)
+        # = 279 (payload size)
         payload_size = 279
-        reply_header = Header(server_version=self.server.get_version(),
-                              response_code=ServerReplyCodes.FILE_RECEIVED_SUCCESSFULLY_WITH_CRC,
-                              payload_size=payload_size)
-        # Format string: 16 bytes for Client ID, 4 bytes for encrypted content Size, 255 bytes for File Name, 4 bytes for Checksum
+        reply_header = ServerMessageHeader(server_version=self.server.get_version(),
+                                           response_code=ServerReplyCodes.FILE_RECEIVED_SUCCESSFULLY_WITH_CRC,
+                                           payload_size=payload_size)
+        # Format string: 16 bytes for Client ID, 4 bytes for encrypted content Size, 255 bytes for File Name,
+        # 4 bytes for Checksum
         message_format = '<16s I 255s I'
         client_id_bytes = client_id.encode("utf-8")
         file_name_bytes = message_file_name.encode("utf-8")

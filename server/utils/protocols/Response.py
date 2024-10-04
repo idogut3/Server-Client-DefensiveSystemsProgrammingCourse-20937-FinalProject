@@ -1,11 +1,14 @@
 import struct
 
 
-class Header:
+class ServerMessageHeader:
     def __init__(self, server_version, response_code, payload_size=0):
         self.server_version = server_version
         self.response_code = response_code
         self.payload_size = payload_size
+
+    def get_payload_size(self):
+        return self.payload_size
 
     def pack_header(self):
         # struct format (That we pack the message header with):

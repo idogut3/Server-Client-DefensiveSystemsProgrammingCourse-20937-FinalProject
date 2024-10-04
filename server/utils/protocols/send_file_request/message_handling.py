@@ -1,5 +1,6 @@
 import struct
 
+from server.utils.protocols.Request import ClientMessageHeader
 from server.utils.server_utils import unpack_message
 
 
@@ -40,3 +41,11 @@ def extract_relevant_values_from_crc_conformation_message_as_dict(client_crc_con
         "conformation_reply_code": conformation_reply_code,
         "conformation_reply_file_name": conformation_reply_file_name
     }
+
+
+def receive_request_header(conn):
+    client_id = conn.recv(16)
+    client_version = conn.recv(1)
+    code = conn.recv(4)
+    payload_size = conn.recv(4)
+    return ClientMessageHeader(client_id, client_version, code, payload_size)
