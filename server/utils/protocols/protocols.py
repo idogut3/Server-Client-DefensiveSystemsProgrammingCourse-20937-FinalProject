@@ -132,22 +132,37 @@ class SendFileRequestProtocol(Protocol):
         client_crc_conformation_message = self.receive_client_crc_conformation_message()
 
     def receive_client_crc_conformation_message(self):
-        client_crc_conformation_message_length = 278  # client_id -> 16 bytes + version -> 1 byte  + Code -> 2 bytes + payload size -> 4 bytes + file_name -> 255 bytes
+        # client_id -> 16 bytes + version -> 1 byte  + Code -> 2 bytes + payload size -> 4 bytes + file_name -> 255 bytes
+        client_crc_conformation_message_length = 278
         client_crc_conformation_message = self.conn.recv(client_crc_conformation_message_length)
         return client_crc_conformation_message
 
-    def handle_crc_conformation_reply(self, client_crc_conformation_message):
+    def handle_crc_conformation_reply(self, client_crc_conformation_message, decrypted_file_content):
         client_crc_conformation_message_dict = extract_relevant_values_from_crc_conformation_message_as_dict(
             client_crc_conformation_message)
 
         client_id = client_crc_conformation_message_dict["conformation_reply_client_id"]
         code = client_crc_conformation_message_dict["conformation_reply_code"]
         conformation_reply_file_name = client_crc_conformation_message_dict["conformation_reply_file_name"]
-        #TODO: checks for client id, file name ect ect ...
-        if code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
-            pass
-            #TODO: save the file
 
+        # TODO: checks for client id, file name ect ect ...
+
+        if code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
+            self.server.get_database().save_file(client_id, conformation_reply_file_name, decrypted_file_content)
+            self.send_receive_message_thanks(client_id)
+        elif code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
+            pass  # TODO::::::
+
+    def send_receive_message_thanks(self, client_id):
+        reply = self.build_receive_message_thanks_reply(client_id)
+        reply.response(self.conn)
+
+    def build_receive_message_thanks_reply(self, client_id) -> Response:
+        reply_header = Header(server_version=self.server.get_version(),
+                              response_code=ServerReplyCodes.RECEIVE_MESSAGE_THANKS, payload_size=16)
+        payload = client_id.encode("utf-8")
+        reply = Response(reply_header, payload=payload)
+        return reply
 
     def handle_send_file_request_message(self, message):
         client_id, encrypted_content_size, original_file_size, packet_number, total_packets, message_file_name, encrypted_message_content = \

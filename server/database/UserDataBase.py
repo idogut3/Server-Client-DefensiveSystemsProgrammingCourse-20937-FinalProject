@@ -1,5 +1,5 @@
 from server.database.utils import database_utils
-from server.database.utils.database_utils import compute_new_aes_key
+from server.database.utils.database_utils import compute_new_aes_key, save_file_in_path
 from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import encrypt_aes_key_with_public_key
 
 
@@ -79,3 +79,10 @@ class UserDatabase:
                 return user.get_aes_key()
         return ""  # In case of an error
 
+    def save_file(self, client_id, conformation_reply_file_name, decrypted_file_content):
+        for user in self.users.values():
+            if user.get_uuid() == client_id:
+                path = user.get_directory_path() + conformation_reply_file_name
+                save_file_in_path(path, decrypted_file_content)
+                return True
+        return False

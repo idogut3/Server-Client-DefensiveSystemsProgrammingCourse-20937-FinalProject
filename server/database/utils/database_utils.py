@@ -24,4 +24,5 @@ def compute_new_aes_key(key_size=256):
     return get_random_bytes(key_size // 8)
 
 
-
+def save_file_in_path(path, file):
+    pass
