@@ -49,3 +49,4 @@ def receive_request_header(conn):
     code = conn.recv(4)
     payload_size = conn.recv(4)
     return ClientMessageHeader(client_id, client_version, code, payload_size)
+

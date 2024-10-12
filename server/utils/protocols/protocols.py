@@ -126,17 +126,15 @@ class SendFileRequestProtocol(Protocol):
         super().__init__(server, conn)
 
     def protocol(self, message):
-        message_dict = self.handle_send_file_request_message(message)
-        message_file_name = message_dict["file_name"]
-        decrypted_file_content = message_dict["decrypted_file_content"]
+        self.handle_send_file_request_message(message)
         # TODO: more code here .........
         client_crc_conformation_message = self.receive_client_crc_conformation_message()
-    #
-    # def receive_send_file_request_message(self) -> Request:
-    #     #todo: header = ClientMessageHeader.receive_request_header(conn=self.conn)
-    #     payload_size = header.get_payload_size()
-    #     payload = self.receive_send_file_request_message_payload(payload_size)
-    #     return Request(header, payload)
+        conformation_reply_code_number_in_dict = 1
+        crc_conformation_code = \
+            extract_relevant_values_from_crc_conformation_message_as_dict(client_crc_conformation_message)[
+                conformation_reply_code_number_in_dict]
+
+        self.handle_crc_conformation_reply_code(crc_conformation_code)
 
     def receive_send_file_request_message_payload(self, payload_size):
         return self.conn.recv(payload_size)
@@ -148,24 +146,15 @@ class SendFileRequestProtocol(Protocol):
         client_crc_conformation_message = self.conn.recv(client_crc_conformation_message_length)
         return client_crc_conformation_message
 
-    def handle_crc_conformation_reply(self, client_crc_conformation_message, decrypted_file_content):
-        client_crc_conformation_message_dict = extract_relevant_values_from_crc_conformation_message_as_dict(
-            client_crc_conformation_message)
-
-        client_id = client_crc_conformation_message_dict["conformation_reply_client_id"]
-        code = client_crc_conformation_message_dict["conformation_reply_code"]
-        conformation_reply_file_name = client_crc_conformation_message_dict["conformation_reply_file_name"]
-
-        # TODO: checks for client id, file name ect ect ...
-
-        if code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
-            managed_to_save_file = self.server.get_database().save_file(client_id, conformation_reply_file_name,
-                                                                        decrypted_file_content)
-            if not managed_to_save_file:
-                pass  # TODO: general error message
-            self.send_receive_message_thanks(client_id)
-        elif code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
-            pass  # TODO::::::
+    def handle_crc_conformation_reply(self, crc_conformation_code):
+        if crc_conformation_code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
+            pass
+        elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
+            pass
+        elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME:
+            pass
+        else:
+            pass
 
     def send_receive_message_thanks(self, client_id):
         reply = self.build_receive_message_thanks_reply(client_id)
@@ -186,7 +175,6 @@ class SendFileRequestProtocol(Protocol):
         decrypted_file_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
         file_checksum_value = calculate_checksum_value(decrypted_file_content)
         self.send_user_file_received_message(client_id, encrypted_content_size, message_file_name, file_checksum_value)
-        return {"file_name": message_file_name, "decrypted_file_content": decrypted_file_content}
 
     def send_user_file_received_message(self, client_id, encrypted_content_size, message_file_name,
                                         file_checksum_value):
