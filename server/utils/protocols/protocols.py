@@ -3,9 +3,10 @@ from abc import abstractmethod
 
 from server.utils.protocols.Request import ClientMessageHeader, Request
 from server.utils.protocols.Response import Response, ServerMessageHeader
+from server.utils.protocols.send_file_request import message_handling
 from server.utils.protocols.send_file_request.message_handling import \
-    extract_relevant_values_from_send_file_request_message, \
-    extract_relevant_values_from_crc_conformation_message_as_dict
+    extract_relevant_values_from_send_file_payload, \
+    extract_relevant_values_from_crc_conformation_message_as_dict, unpack_send_file_payload
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
@@ -126,15 +127,13 @@ class SendFileRequestProtocol(Protocol):
         super().__init__(server, conn)
 
     def protocol(self, message):
-        decrypted_file = self.handle_send_file_request_message(message)
-        # TODO: more code here .........
-        client_crc_conformation_message = self.receive_client_crc_conformation_message()
-        conformation_reply_code_number_in_dict = 1
-        crc_conformation_code = \
-            extract_relevant_values_from_crc_conformation_message_as_dict(client_crc_conformation_message)[
-                conformation_reply_code_number_in_dict]
+        header = message_handling.receive_request_header(self.conn)
+        payload_size = header.payload_size
+        payload = self.receive_send_file_request_message_payload(payload_size=payload_size)
 
-        self.handle_crc_conformation_reply_code(crc_conformation_code, decrypted_file)
+        decrypted_file = self.handle_send_file_request_payload(message, client_id=header.client_id)
+
+        self.handle_crc_conformation_reply_code(crc_conformation_code, decrypted_file, header.client_id)
 
     def receive_send_file_request_message_payload(self, payload_size):
         return self.conn.recv(payload_size)
@@ -146,11 +145,11 @@ class SendFileRequestProtocol(Protocol):
         client_crc_conformation_message = self.conn.recv(client_crc_conformation_message_length)
         return client_crc_conformation_message
 
-    def handle_crc_conformation_reply_code(self, crc_conformation_code, decrypted_file):
+    def handle_crc_conformation_reply_code(self, crc_conformation_code, decrypted_file, client_id):
         if crc_conformation_code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
-            pass
+            self.server.get_database().save_file(client_id=client_id, decrypted_file_content=decrypted_file)
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
-            pass
+            self.protocol(self.conn.recv())
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME:
             pass
         else:
@@ -167,9 +166,9 @@ class SendFileRequestProtocol(Protocol):
         reply = Response(reply_header, payload=payload)
         return reply
 
-    def handle_send_file_request_message(self, message):
-        client_id, encrypted_content_size, original_file_size, packet_number, total_packets, message_file_name, encrypted_message_content = \
-            extract_relevant_values_from_send_file_request_message(message)
+    def handle_send_file_request_payload(self, payload, client_id):
+        encrypted_content_size, original_file_size, packet_number, total_packets, message_file_name, encrypted_message_content = \
+            unpack_send_file_payload(payload=payload)
 
         user_aes_key = self.server.get_database.get_aes_key_by_uuid(client_id)
         decrypted_file_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)

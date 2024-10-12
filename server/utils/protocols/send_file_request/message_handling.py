@@ -21,15 +21,6 @@ def unpack_send_file_payload(payload):
     return encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
 
 
-def extract_relevant_values_from_send_file_request_message(message):
-    message_dict = unpack_message(message)
-    client_id = message_dict["client_id"]
-    payload = message_dict["payload"]
-    encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content = \
-        unpack_send_file_payload(payload)
-    return client_id, encrypted_content_size, original_file_size, packet_number, total_packets, file_name, encrypted_message_content
-
-
 def extract_relevant_values_from_crc_conformation_message_as_dict(client_crc_conformation_message):
     message_dict = unpack_message(client_crc_conformation_message)
     conformation_reply_client_id = message_dict["client_id"]
@@ -49,4 +40,3 @@ def receive_request_header(conn):
     code = conn.recv(4)
     payload_size = conn.recv(4)
     return ClientMessageHeader(client_id, client_version, code, payload_size)
-

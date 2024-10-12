@@ -79,10 +79,10 @@ class UserDatabase:
                 return user.get_aes_key()
         return ""  # In case of an error
 
-    def save_file(self, client_id, conformation_reply_file_name, decrypted_file_content):
+    def save_file(self, client_id, decrypted_file_content):
         for user in self.users.values():
             if user.get_uuid() == client_id:
-                path = user.get_directory_path() + conformation_reply_file_name
+                path = user.get_directory_path()
                 save_file_in_path(path, decrypted_file_content)
                 return True
         return False
