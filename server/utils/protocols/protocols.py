@@ -126,7 +126,7 @@ class SendFileRequestProtocol(Protocol):
         super().__init__(server, conn)
 
     def protocol(self, message):
-        self.handle_send_file_request_message(message)
+        decrypted_file = self.handle_send_file_request_message(message)
         # TODO: more code here .........
         client_crc_conformation_message = self.receive_client_crc_conformation_message()
         conformation_reply_code_number_in_dict = 1
@@ -134,7 +134,7 @@ class SendFileRequestProtocol(Protocol):
             extract_relevant_values_from_crc_conformation_message_as_dict(client_crc_conformation_message)[
                 conformation_reply_code_number_in_dict]
 
-        self.handle_crc_conformation_reply_code(crc_conformation_code)
+        self.handle_crc_conformation_reply_code(crc_conformation_code, decrypted_file)
 
     def receive_send_file_request_message_payload(self, payload_size):
         return self.conn.recv(payload_size)
@@ -146,7 +146,7 @@ class SendFileRequestProtocol(Protocol):
         client_crc_conformation_message = self.conn.recv(client_crc_conformation_message_length)
         return client_crc_conformation_message
 
-    def handle_crc_conformation_reply(self, crc_conformation_code):
+    def handle_crc_conformation_reply_code(self, crc_conformation_code, decrypted_file):
         if crc_conformation_code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
             pass
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
@@ -175,6 +175,7 @@ class SendFileRequestProtocol(Protocol):
         decrypted_file_content = decrypt_file_with_aes_key(encrypted_message_content, user_aes_key)
         file_checksum_value = calculate_checksum_value(decrypted_file_content)
         self.send_user_file_received_message(client_id, encrypted_content_size, message_file_name, file_checksum_value)
+        return decrypted_file_content
 
     def send_user_file_received_message(self, client_id, encrypted_content_size, message_file_name,
                                         file_checksum_value):
