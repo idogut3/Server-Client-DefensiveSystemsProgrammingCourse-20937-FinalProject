@@ -1,7 +1,7 @@
 from pyexpat.errors import messages
 
 from server.database.utils import database_utils
-from server.database.utils.database_utils import compute_new_aes_key, save_file_in_path
+from server.database.utils.database_utils import compute_new_aes_key
 from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import encrypt_aes_key_with_public_key
 
 
