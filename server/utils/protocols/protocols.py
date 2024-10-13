@@ -1,13 +1,12 @@
 import struct
 from abc import abstractmethod
 
-from server.utils.protocols.responses.Response import Response, ServerMessageHeader
-from server.utils.protocols.send_file_request import message_handling
-from server.utils.protocols.send_file_request.message_handling import unpack_send_file_payload
+from server.utils.protocols.responses.Response import Response, ServerMessageHeader, send_general_server_error
+from server.utils.protocols import message_handling
+from server.utils.protocols.message_handling import unpack_send_file_payload, receive_register_request_protocol_payload
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
-from server.utils.server_utils import unpack_message
 from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import decrypt_file_with_aes_key
 
 
@@ -17,7 +16,7 @@ class Protocol:
         self.conn = conn
 
     @abstractmethod
-    def protocol(self, message):
+    def protocol(self, header):
         pass
 
 
@@ -25,9 +24,8 @@ class RegisterRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
 
-    def protocol(self, message) -> bool:
-        message_dict = unpack_message(message)
-        payload = message_dict["payload"]
+    def protocol(self, header) -> bool:
+        payload = receive_register_request_protocol_payload(conn=self.conn)
         username = payload[:255].decode('utf-8')
 
         if not self.server.get_database().is_username_already_registered(username):
@@ -123,12 +121,12 @@ class SendFileRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
 
-    def protocol(self, message):
+    def protocol(self, header):
         header = message_handling.receive_request_header(self.conn)
         payload_size = header.payload_size
         payload = self.receive_send_file_request_message_payload(payload_size=payload_size)
 
-        decrypted_file = self.handle_send_file_request_payload(message, client_id=header.client_id)
+        decrypted_file = self.handle_send_file_request_payload(payload, client_id=header.client_id)
 
         self.handle_crc_conformation_reply_code(header.code, decrypted_file, header.client_id)
 
@@ -147,11 +145,12 @@ class SendFileRequestProtocol(Protocol):
             self.server.get_database().save_file(client_id=client_id, decrypted_file_content=decrypted_file)
             self.send_receive_message_thanks(client_id=client_id)
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
-            self.protocol(self.conn.recv())
+            header = message_handling.receive_request_header(conn=self.conn)
+            self.protocol(header=header)
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME:
             self.send_receive_message_thanks(client_id=client_id)
-        else:
-            pass  # GENERAL ERROR MESSAGE SEND
+        else:  # The client replied with a crc conformation value that does not match any expected reply code
+            send_general_server_error(conn=self.conn, server_version=self.server.get_version())
 
     def send_receive_message_thanks(self, client_id):
         reply = self.build_receive_message_thanks_reply(client_id)

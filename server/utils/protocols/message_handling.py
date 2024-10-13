@@ -1,7 +1,5 @@
 import struct
-
 from server.utils.protocols.Request import ClientMessageHeader
-from server.utils.server_utils import unpack_message
 
 
 def unpack_send_file_payload(payload):
@@ -40,3 +38,9 @@ def receive_request_header(conn):
     code = conn.recv(4)
     payload_size = conn.recv(4)
     return ClientMessageHeader(client_id, client_version, code, payload_size)
+
+
+def receive_register_request_protocol_payload(conn):
+    user_name_bytes_size = 255
+    payload = conn.recv(user_name_bytes_size)
+    return payload
