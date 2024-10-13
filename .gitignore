@@ -1,5 +1,8 @@
 .idea
 .vs/
-x64/Debug
 .vs
 x64
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+Debug/
