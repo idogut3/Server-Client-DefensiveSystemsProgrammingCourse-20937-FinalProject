@@ -201,5 +201,5 @@ class ReconnectToServerRequestProtocol(Protocol):
     def __init__(self, server, conn):
         super().__init__(server, conn)
 
-    def protocol(self, message):
+    def protocol(self, header):
         pass

@@ -1,6 +1,7 @@
 import socket
 
 from server.database.UserDataBase import UserDatabase
+from server.utils.protocols.message_handling import receive_request_header
 from server.utils.protocols.protocols import *
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 
@@ -23,11 +24,6 @@ class Server:
             self.ADDR = (self.host, self.port)
             self.database = UserDatabase()
             self.version = 3
-            self.client_reply_protocols = {
-                ClientReplyCodes.REGISTER_REQUEST: RegisterRequestProtocol,
-                ClientReplyCodes.RECONNECT_TO_SERVER_REQUEST: ReconnectToServerRequestProtocol,
-                ClientReplyCodes.SEND_FILE_REQUEST: SendFileRequestProtocol,
-            }
 
     def get_database(self) -> UserDatabase:
         return self.database
@@ -45,11 +41,21 @@ class Server:
             conn, addr = s.accept()
             with conn:
                 print("connected by:", addr)
-                self.handle_connection(conn, addr)
+                self.handle_connection(conn)
                 # More code maybe here ...
 
-    def handle_connection(self, conn, addr):
-        pass
+    def handle_connection(self, conn):
+        header = receive_request_header(conn=conn)
+        protocol_code = header.code
+
+        if ClientReplyCodes.REGISTER_REQUEST == protocol_code:
+            register_request_protocol_obj = RegisterRequestProtocol(server=self, conn=conn)
+            register_request_protocol_obj.protocol(header=header)
+        elif ClientReplyCodes.RECONNECT_TO_SERVER_REQUEST == protocol_code:
+            reconnect_to_server_request_protocol_obj = ReconnectToServerRequestProtocol(server=self, conn=conn)
+            reconnect_to_server_request_protocol_obj.protocol(header=header)
+        else:  # Unexpected protocol number
+            send_general_server_error(conn, self.get_version())
 
     def run(self):
         self.check_existing_database()
