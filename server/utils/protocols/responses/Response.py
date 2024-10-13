@@ -1,5 +1,7 @@
 import struct
 
+from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
+
 
 class ServerMessageHeader:
     def __init__(self, server_version, response_code, payload_size=0):
@@ -30,3 +32,14 @@ class Response:
     def response(self, conn):
         message = self.pack_message_header_with_payload()
         conn.sendall(message)
+
+
+def send_general_server_error(conn, server_version):
+    reply = build_send_general_server_error_response(server_version=server_version)
+    reply.response(conn)
+
+
+def build_send_general_server_error_response(server_version) -> Response:
+    header = ServerMessageHeader(server_version=server_version, response_code=ServerReplyCodes.GENERAL_SERVER_ERROR)
+    reply = Response(header)
+    return reply

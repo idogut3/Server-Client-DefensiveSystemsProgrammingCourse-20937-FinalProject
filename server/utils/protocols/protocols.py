@@ -1,11 +1,9 @@
 import struct
 from abc import abstractmethod
 
-from server.utils.protocols.Request import ClientMessageHeader, Request
-from server.utils.protocols.Response import Response, ServerMessageHeader
+from server.utils.protocols.responses.Response import Response, ServerMessageHeader
 from server.utils.protocols.send_file_request import message_handling
-from server.utils.protocols.send_file_request.message_handling import \
-    extract_relevant_values_from_crc_conformation_message_as_dict, unpack_send_file_payload
+from server.utils.protocols.send_file_request.message_handling import unpack_send_file_payload
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
 from server.utils.protocols.send_file_request.send_file_protocol_utils import calculate_checksum_value
@@ -147,12 +145,13 @@ class SendFileRequestProtocol(Protocol):
     def handle_crc_conformation_reply_code(self, crc_conformation_code, decrypted_file, client_id):
         if crc_conformation_code == ClientReplyCodes.ADEQUATE_CRC_VALUE:
             self.server.get_database().save_file(client_id=client_id, decrypted_file_content=decrypted_file)
+            self.send_receive_message_thanks(client_id=client_id)
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE:
             self.protocol(self.conn.recv())
         elif crc_conformation_code == ClientReplyCodes.INADEQUATE_CRC_VALUE_FOR_THE_FORTH_TIME:
-            pass
+            self.send_receive_message_thanks(client_id=client_id)
         else:
-            pass
+            pass  # GENERAL ERROR MESSAGE SEND
 
     def send_receive_message_thanks(self, client_id):
         reply = self.build_receive_message_thanks_reply(client_id)
