@@ -5,7 +5,6 @@ from server.utils.protocols.Request import ClientMessageHeader, Request
 from server.utils.protocols.Response import Response, ServerMessageHeader
 from server.utils.protocols.send_file_request import message_handling
 from server.utils.protocols.send_file_request.message_handling import \
-    extract_relevant_values_from_send_file_payload, \
     extract_relevant_values_from_crc_conformation_message_as_dict, unpack_send_file_payload
 from server.utils.protocols.codes.client_reply_codes_enum import ClientReplyCodes
 from server.utils.protocols.codes.server_reply_codes_enum import ServerReplyCodes
@@ -133,7 +132,7 @@ class SendFileRequestProtocol(Protocol):
 
         decrypted_file = self.handle_send_file_request_payload(message, client_id=header.client_id)
 
-        self.handle_crc_conformation_reply_code(crc_conformation_code, decrypted_file, header.client_id)
+        self.handle_crc_conformation_reply_code(header.code, decrypted_file, header.client_id)
 
     def receive_send_file_request_message_payload(self, payload_size):
         return self.conn.recv(payload_size)
