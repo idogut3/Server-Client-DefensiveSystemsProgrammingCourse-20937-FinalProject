@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "\\client-side",
+    "\\client-side\\client-side",
+    "\\client-side\\x64",
+    "\\server-side\\main"
   ],
-  "SelectedNode": "\\.idea",
   "PreviewInSolutionExplorer": false
 }
