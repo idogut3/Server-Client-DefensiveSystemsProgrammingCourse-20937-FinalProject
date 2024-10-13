@@ -5,7 +5,6 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
 
-from server.utils.server_utils import calculate_checksum_value
 
 
 def compute_new_uuid() -> str:
@@ -23,6 +22,3 @@ def make_directory(directory_name) -> bool:
 def compute_new_aes_key(key_size=256):
     return get_random_bytes(key_size // 8)
 
-
-def save_file_in_path(path, file):
-    pass

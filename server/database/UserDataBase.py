@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+
 from server.database.utils import database_utils
 from server.database.utils.database_utils import compute_new_aes_key, save_file_in_path
 from server.utils.encryption_decryption_utils.rsa_encrtption_decryption import encrypt_aes_key_with_public_key
@@ -82,7 +84,9 @@ class UserDatabase:
     def save_file(self, client_id, decrypted_file_content):
         for user in self.users.values():
             if user.get_uuid() == client_id:
-                path = user.get_directory_path()
-                save_file_in_path(path, decrypted_file_content)
+                path = user.get_directory_path() + "\\" + "message.txt"
+                file = open(path, "w")
+                file.write(decrypted_file_content)
+                file.close()
                 return True
         return False
