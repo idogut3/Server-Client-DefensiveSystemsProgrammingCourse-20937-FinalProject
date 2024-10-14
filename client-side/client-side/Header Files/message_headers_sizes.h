@@ -1,0 +1,9 @@
+#ifndef MESSAGE_HEADERS_SIZES_H
+#define MESSAGE_HEADERS_SIZES_H
+
+enum MessageHeaderSizes{
+	REQUEST_HEADER = 23,
+	RESPONSE_HEADER = 7
+};
+
+#endif
