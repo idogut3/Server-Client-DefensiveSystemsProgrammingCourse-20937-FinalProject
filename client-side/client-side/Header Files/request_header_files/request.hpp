@@ -1,5 +1,5 @@
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef REQUEST_HPP
+#define REQUEST_HPP
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -16,6 +16,7 @@ protected:
 	uint32_t payload_size;
 	
 public:
+	RequestHeader(UUID uuid, uint16_t code, uint32_t payload_size);
 	UUID getUUID() const;
 	uint8_t getVersion() const;
 	uint16_t getCode() const;
@@ -30,7 +31,7 @@ protected:
 	RequestHeader header;
 
 public:
-	Request(UUID uuid, uint16_t code, uint32_t payload_size);
+	Request(RequestHeader header);
 
     RequestHeader getHeader() const { return header;}
 	virtual Payload getPayload() const = 0;

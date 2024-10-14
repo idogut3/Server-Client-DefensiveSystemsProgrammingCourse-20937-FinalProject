@@ -1,5 +1,5 @@
-#ifndef PAYLODS_SIZES_H
-#define PAYLODS_SIZES_H
+#ifndef PAYLODS_SIZES_HPP
+#define PAYLODS_SIZES_HPP
 
 // 32 bits = 4 bytes
 enum PayloadSize : uint32_t {

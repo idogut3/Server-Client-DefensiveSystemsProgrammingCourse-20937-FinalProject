@@ -1,5 +1,5 @@
-#ifndef CODES_H
-#define CODES_H
+#ifndef CODES_HPP
+#define CODES_HPP
 
 // 16 bits = 2 bytes
 enum Codes : uint16_t {

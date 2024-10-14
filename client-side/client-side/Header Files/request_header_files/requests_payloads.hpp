@@ -1,5 +1,5 @@
-#ifndef REQUEST_PAYLOADS_H
-#define REQUEST_PAYLOADS_H
+#ifndef REQUEST_PAYLOADS_HPP
+#define REQUEST_PAYLOADS_HPP
 
 class RegistrationPayload : Payload {
 protected:

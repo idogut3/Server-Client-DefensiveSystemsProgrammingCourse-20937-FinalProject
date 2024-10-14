@@ -1,5 +1,5 @@
-#ifndef REQUESTS_H
-#define REQUESTS_H
+#ifndef REQUESTS_HPP
+#define REQUESTS_HPP
 
 #include "request.h"
 #include "requests_payloads.h"
