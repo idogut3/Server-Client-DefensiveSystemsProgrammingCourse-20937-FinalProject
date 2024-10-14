@@ -7,64 +7,61 @@
 
 class RegisterRequest : public Request {
 protected:
-    RegistrationPayload payload;
+	RegistrationPayload payload;
 
 public:
-    RegisterRequest(RequestHeader header, RegistrationPayload payload);
+	RegisterRequest(RequestHeader header, RegistrationPayload payload);
 
 };
 
 
 class SendPublicKeyRequest : public Request {
 private:
-    SendPublicKeyPayload payload;
+	SendPublicKeyPayload payload;
 
 public:
-    SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload)
+	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload)
 }
 
 class ReconnectRequest : public Request {
 private:
-    ReconnectionPayload payload;
+	ReconnectionPayload payload;
 
 public:
-    ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
-    
+	ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
+
 };
 
 class ValidCrcRequest : public Request {
 private:
-    ValidCrcPayload payload;
+	ValidCrcPayload payload;
 
 public:
-    ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
+	ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
 };
 
 class InvalidCrcRequest : public Request {
 private:
-    InvalidCrcPayload payload;
+	InvalidCrcPayload payload;
 
 public:
-    InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
+	InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
 };
 
 class InvalidCrcDoneRequest : public Request {
 private:
-    InvalidCrcDonePayload payload;
+	InvalidCrcDonePayload payload;
 
 public:
-    InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
+	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
 };
 
-class SendFileRequset : public Request {
+class SendFileRequest : public Request {
 private:
-    SendFilePayload payload;
+	SendFilePayload payload;
 
 public:
-    SendFileRequset(RequestHeader header, SendFilePayload payload);
+	SendFileRequest(RequestHeader header, SendFilePayload payload);
 };
-
-
-
 
 #endif
