@@ -1,29 +1,22 @@
 #include "Header Files\request_header_files\request.h"
+#include "Header Files\utils.hpp"
 
-RequestHeader::RequestHeader(UUID uuid, uint16_t code, uint32_t payload_size) {
-	uuid(uuid);
-	version(VERSION);
-	code(code);
-	payload_size(payload_size);
-}
+RequestHeader::RequestHeader(UUID user_id, uint16_t request_code, uint32_t request_payload_size)
+	: uuid(user_id), version(VERSION), code(request_code), payload_size(request_payload_size) {}
 
-
-Request::Request() {
-	uuid(uuid),
-		version(VERSION),
-		code(code),
-		payload_size(payload_size)
-}
-
-UUID Request::getUuid() const {
+UUID RequestHeader::getUUID() const {
 	return this->uuid;
 }
-uint8_t Request::getVersion() const {
+uint8_t RequestHeader::getVersion() const {
 	return this->version;
 }
-uint16_t Request::getCode() const {
+uint16_t RequestHeader::getCode() const {
 	return this->code;
 }
-uint32_t Request::getPayloadSize() const {
+uint32_t RequestHeader::getPayloadSize() const {
 	return this->payload_size;
 }
+
+Request::Request(RequestHeader request_header)
+	: header(request_header) {}
+
