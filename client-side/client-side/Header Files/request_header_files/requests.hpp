@@ -1,8 +1,8 @@
 #ifndef REQUESTS_HPP
 #define REQUESTS_HPP
 
-#include "request.h"
-#include "requests_payloads.h"
+#include "request.hpp"
+#include "requests_payloads.hpp"
 
 
 class RegisterRequest : public Request {
