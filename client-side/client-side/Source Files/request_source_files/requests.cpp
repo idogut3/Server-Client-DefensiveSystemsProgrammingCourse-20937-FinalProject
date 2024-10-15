@@ -10,7 +10,7 @@ Payload RegisterRequest::getPayload() const {
 
 
 SendPublicKeyRequest::SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload)
-	: Request(header), SendPublicKeyPayload(payload) {}
+	: Request(header), payload(payload) {}
 
 Payload SendPublicKeyRequest::getPayload() const {
 	return payload;
@@ -19,7 +19,7 @@ Payload SendPublicKeyRequest::getPayload() const {
 
 
 ReconnectRequest::ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
-	: Request(header), ReconnectionPayload(payload) {}
+	: Request(header), payload(payload) {}
 
 Payload ReconnectRequest::getPayload() const {
 	return payload;
@@ -28,7 +28,7 @@ Payload ReconnectRequest::getPayload() const {
 
 
 ValidCrcRequest::ValidCrcRequest(RequestHeader header, ValidCrcPayload payload)
-	: Request(header), ValidCrcPayload(payload) {}
+	: Request(header), payload(payload) {}
 
 	Payload ValidCrcRequest::getPayload() const {
 		return payload;
@@ -37,7 +37,7 @@ ValidCrcRequest::ValidCrcRequest(RequestHeader header, ValidCrcPayload payload)
 
 
 InvalidCrcRequest::InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload)
-	: Request(header), InvalidCrcPayload(payload) {}
+	: Request(header), payload(payload) {}
 
 Payload InvalidCrcRequest::getPayload() const {
 	return payload;
@@ -46,7 +46,7 @@ Payload InvalidCrcRequest::getPayload() const {
 
 
 InvalidCrcDoneRequest::InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload)
-	: Request(header), InvalidCrcDonePayload(payload) {}
+	: Request(header), payload(payload) {}
 
 Payload InvalidCrcDoneRequest::getPayload() const {
 	return payload;
@@ -55,9 +55,9 @@ Payload InvalidCrcDoneRequest::getPayload() const {
 
 
 SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
-	: Request(header), SendFilePayload(payload) {}
+	: Request(header), payload(payload) {}
 
 Payload SendFileRequest::getPayload() const {
-	return payload; // Return the payload
+	return payload;
 }
 
