@@ -1,7 +1,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <cstdint>              // For uint8_t, uint16_t, uint32_t
 #include <fstream>
 #include <iostream>
 #include <string>
