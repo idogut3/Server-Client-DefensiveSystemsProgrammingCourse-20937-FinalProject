@@ -1,13 +1,7 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
+#include "utils.hpp"
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <iostream>
-#include <cstdint> // Include for uint8_t, uint16_t, uint32_t
-
-using UUID = boost::uuids::uuid;
 class RequestHeader {
 protected:
 	UUID uuid;

@@ -1,5 +1,6 @@
 #ifndef CODES_HPP
 #define CODES_HPP
+#include "Header Files\utils.hpp"
 
 // 16 bits = 2 bytes
 enum Codes : uint16_t {

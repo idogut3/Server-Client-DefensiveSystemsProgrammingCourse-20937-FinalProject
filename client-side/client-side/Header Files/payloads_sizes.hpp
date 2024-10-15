@@ -1,5 +1,6 @@
 #ifndef PAYLODS_SIZES_HPP
 #define PAYLODS_SIZES_HPP
+#include "Header Files\utils.hpp"
 
 // 32 bits = 4 bytes
 enum PayloadSize : uint32_t {
