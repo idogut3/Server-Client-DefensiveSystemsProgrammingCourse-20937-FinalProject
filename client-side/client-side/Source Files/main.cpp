@@ -1,31 +1,28 @@
-//// ClientSide.cpp : This file contains the 'main' function. Program execution begins and ends there.
-////
-//
-//#include "client-side\Header Files\utils.hpp"
-//
-//static bool transferValidation(client& client, string ip_port, string name, string file_path) {
-//	size_t pos = ip_port.find(':');
-//
-//	if (pos == string::npos || name.length() > max_name_length || name.length() == 0 || file_path.length() == 0) {
-//		return false;
-//	}
-//
-//	string ip = ip_port.substr(0, pos);
-//	string port = ip_port.substr(pos + 1);
-//
-//	bool valid = is_integer(port);
-//	if (!valid) {
-//		return false;
-//	}
-//
-//	client.setaddress(ip);
-//	client.setport(port);
-//	client.setname(name);
-//	client.setfilepath(file_path);
-//
-//	return true;
-//}
-//
+#include "client-side\Header Files\utils.hpp"
+
+static bool transferValidation(client& client, string ip_port, string name, string file_path) {
+	size_t colon_postion = ip_port.find(':');
+
+	if (colon_postion == string::npos || name.length() > MAX_NAME_LENGTH || name.length() == 0 || file_path.length() == 0) {
+		return false;
+	}
+
+	string ip = ip_port.substr(0, colon_postion);
+	string port = ip_port.substr(colon_postion + 1);
+
+	bool is_port_valid = is_integer(port);
+	if (!is_port_valid) {
+		return false;
+	}
+
+	client.setaddress(ip);
+	client.setport(port);
+	client.setname(name);
+	client.setfilepath(file_path);
+
+	return true;
+}
+
 ////static Client createClient() {
 ////	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
 ////	string line, ip_port, client_name, client_file_path;
