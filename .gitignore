@@ -2,7 +2,5 @@
 .vs/
 .vs
 x64
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
 Debug/
+/client-side/packages/
