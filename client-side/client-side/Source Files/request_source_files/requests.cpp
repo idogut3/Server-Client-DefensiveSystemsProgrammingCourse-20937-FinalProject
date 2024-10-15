@@ -1,4 +1,5 @@
 #include "Header Files\utils.hpp"
+#include "requests.hpp"
 
 RegisterRequest::RegisterRequest(RequestHeader header, RegistrationPayload payload)
 	: Request(header), payload(payload) {}
