@@ -17,7 +17,7 @@ public:
 	void setPort(std::string port);
 	void setName(std::string name);
 	void setFilePath(std::string file_path);
-	void setUuid(UUID uuid);
+	void setUUID(UUID uuid);
 
 	std::string getAddress() const;
 	std::string getPort() const;

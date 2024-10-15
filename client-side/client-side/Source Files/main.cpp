@@ -63,73 +63,72 @@ static Client createClient() {
 
 }
 
-////static string read_from_me_info(Client& client) {
-////	string path_info = EXE_DIR_FILE_PATH("me.info");
-////	string line, client_name, client_id, private_key;
-////	int lines = 1;
-////	ifstream info_file(path_info);
-////
-////	if (!info_file.is_open()) {
-////		throw std::runtime_error("Error opening the 'me.info' file, aborting program.");
-////	}
-////
-////	while (getline(info_file, line)) {
-////		cout << "'" << line << "' " << line.length() << endl;
-////		switch (lines) {
-////		case 1:
-////			client_name = line;
-////			break;
-////		case 2:
-////			client_id = line;
-////			break;
-////		case 3:
-////			private_key = line;
-////			break;
-////		default:
-////			break;
-////		}
-////		lines++;
-////	}
-////
-////	if (lines != 4 || client_name.length() > MAX_NAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
-////		throw std::invalid_argument("Error: me.info file contains invalid data.");
-////	}
-////	// Get id in form of boost::uuids::uuid and set the client's name and uuid.
-////	UUID id = getUuidFromString(client_id);
-////	client.setName(client_name);
-////	client.setUuid(id);
-////
-////	// Close the file and return the private key (encoded in base64).
-////	info_file.close();
-////	return private_key;
-////}
-////
-////// This method receives the client's name, id, and private key, writes them to me.info and writes the private key to priv.key as well.
-////static void save_to_files(string name, UUID uuid, string priv_key) {
-////	// Saving id and key into wanted formats, saving paths for both files and opening the streams.
-////	string id = boost::uuids::to_string(uuid);
-////	id.erase(remove(id.begin(), id.end(), '-'), id.end()); // Remove '-' from the string.
-////
-////	string base64PrivKey = Base64Wrapper::encode(priv_key);
-////	string path_info = EXE_DIR_FILE_PATH("me.info");
-////	string path_key = EXE_DIR_FILE_PATH("priv.key");
-////	ofstream info_file(path_info), key_file(path_key);
-////
-////	if (!info_file.is_open()) {
-////		throw std::runtime_error("Error opening the 'me.info' file, aborting program.");
-////	}
-////	if (!key_file.is_open()) {
-////		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
-////	}
-////
-////	// Writing to both files.
-////	info_file << name << endl << id << endl << base64PrivKey << endl;
-////	key_file << base64PrivKey << endl;
-////	// Closing the streams.
-////	info_file.close();
-////	key_file.close();
-////}
-//
+static string read_me_info_file(Client& client) {
+	string me_info_path = EXE_DIR_FILE_PATH("me.info");
+	string line, client_name, client_id, private_key;
+	int lines = 1;
+	ifstream info_file(me_info_path);
+
+	if (!info_file.is_open()) {
+		throw std::runtime_error("Error opening 'me.info' - exiting");
+	}
+
+	while (getline(info_file, line)) {
+		cout << "'" << line << "' " << line.length() << endl;
+		switch (lines) {
+		case 1:
+			client_name = line;
+			break;
+		case 2:
+			client_id = line;
+			break;
+		case 3:
+			private_key = line;
+			break;
+		default:
+			break;
+		}
+		lines++;
+	}
+
+	if (lines != 4 || client_name.length() > MAX_NAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
+		throw std::invalid_argument("Error: me.info contains invalid data.");
+	}
+
+	UUID id = getUUIDFromString(client_id);
+	client.setName(client_name);
+	client.setUUID(id);
+
+	info_file.close();
+	return private_key;
+}
+
+// This method receives the client's name, id, and private key, writes them to me.info and writes the private key to priv.key as well.
+static void save_me_info(string name, UUID uuid, string priv_key) {
+	// Saving id and key into wanted formats, saving paths for both files and opening the streams.
+	string id = boost::uuids::to_string(uuid);
+	id.erase(remove(id.begin(), id.end(), '-'), id.end()); // Remove '-' from the string.
+
+	string base64PrivKey = Base64Wrapper::encode(priv_key);
+	string path_info = EXE_DIR_FILE_PATH("me.info");
+	string path_key = EXE_DIR_FILE_PATH("priv.key");
+	ofstream info_file(path_info), key_file(path_key);
+
+	if (!info_file.is_open()) {
+		throw std::runtime_error("Error opening the 'me.info' file, aborting program.");
+	}
+	if (!key_file.is_open()) {
+		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
+	}
+
+	// Writing to both files.
+	info_file << name << endl << id << endl << base64PrivKey << endl;
+	key_file << base64PrivKey << endl;
+	// Closing the streams.
+	info_file.close();
+	key_file.close();
+}
+
 //static void run_client(tcp::socket& sock, Client& client) {
 //	bool op_success;
 //	string private_key, decrypted_aes_key;
@@ -146,7 +145,7 @@ static Client createClient() {
 //		RSAPrivateWrapper prevKeyWrapper;
 //		string public_key = prevKeyWrapper.getPublicKey();
 //		private_key = prevKeyWrapper.getPrivateKey();
-//		save_to_files(client.getName(), client.getUuid(), private_key);
+//		save_me_info(client.getName(), client.getUuid(), private_key);
 //		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
 //		op_success = sending_pub_key.run(sock);
 //
@@ -160,7 +159,7 @@ static Client createClient() {
 //	}
 //	else { // If me.info does exist, read id and send reconnection request.
 //		// Read the fields from the client.
-//		string key_base64 = read_from_me_info(client);
+//		string key_base64 = read_me_info_file(client);
 //
 //		// Send Reconnection request to the server.
 //		Reconnection reconnection(client.getUuid(), Codes::RECONNECTION_C, PayloadSize::RECONNECTION_P, client.getName().c_str());

@@ -15,11 +15,10 @@
 
 using std::cout;
 using std::cin;
-using UUID = boost::uuids::uuid;
 using std::string;
-
-
+using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
+using UUIDGenerator = boost::uuids::string_generator;  // Alias for the string generator
 
 constexpr auto VERSION = 3;
 constexpr auto NAME_LENGTH = 255;
@@ -30,5 +29,10 @@ constexpr auto MAX_NAME_LENGTH = 100;
 constexpr auto HEX_ID_LENGTH = 32;
 const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug";
 #define EXE_DIR_FILE_PATH(file_name) (EXE_DIR + "\\" + file_name)
+
+
+
+UUID getUUIDFromString(string client_id);
+
 
 #endif

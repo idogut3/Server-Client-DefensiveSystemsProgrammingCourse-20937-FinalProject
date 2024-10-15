@@ -21,7 +21,7 @@ void Client::setName(std::string name) {
 void Client::setFilePath(std::string file_path) {
 	this->file_path = file_path;
 }
-void Client::setUuid(UUID uuid) {
+void Client::setUUID(UUID uuid) {
 	this->uuid = uuid;
 }
 
