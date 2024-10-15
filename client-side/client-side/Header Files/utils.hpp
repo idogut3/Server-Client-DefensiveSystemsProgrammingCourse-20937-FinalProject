@@ -13,12 +13,15 @@
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/endian/conversion.hpp>
 
+namespace uuids = boost::uuids;
+
 using std::cout;
 using std::cin;
 using std::string;
 using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
-using UUIDGenerator = boost::uuids::string_generator;  // Alias for the string generator
+using UUIDGenerator = boost::uuids::string_generator;  
+using boost::uuids::to_string;
 
 constexpr auto VERSION = 3;
 constexpr auto NAME_LENGTH = 255;
@@ -33,6 +36,7 @@ const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug";
 
 
 UUID getUUIDFromString(string client_id);
+
 
 
 #endif
