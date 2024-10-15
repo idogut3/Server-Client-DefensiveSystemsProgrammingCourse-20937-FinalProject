@@ -11,6 +11,8 @@ RegistrationPayload::RegistrationPayload(const char* username) {
     }
 }
 
+
+
 SendPublicKeyPayload::SendPublicKeyPayload(const char* username, const char* public_key) {
     // Attempt to copy the username
     errno_t result = strcpy_s(this->username, sizeof(this->username), username);
@@ -35,6 +37,8 @@ const char* SendPublicKeyPayload::getPublicKey() const {
     return public_key;
 }
 
+
+
 ReconnectionPayload::ReconnectionPayload(const char* username) {
     // Attempt to copy the username
     errno_t result = strcpy_s(this->username, sizeof(this->username), username);
@@ -47,6 +51,8 @@ ReconnectionPayload::ReconnectionPayload(const char* username) {
 const char* ReconnectionPayload::getUsername() const {
     return username;
 }
+
+
 
 ValidCrcPayload::ValidCrcPayload(const char* file_name) {
     // Attempt to copy the file name
@@ -61,6 +67,8 @@ const char* ValidCrcPayload::getFileName() const {
     return file_name;
 }
 
+
+
 InvalidCrcPayload::InvalidCrcPayload(const char* file_name) {
     // Attempt to copy the file name
     errno_t result = strcpy_s(this->file_name, sizeof(this->file_name), file_name);
@@ -74,6 +82,8 @@ const char* InvalidCrcPayload::getFileName() const {
     return file_name;
 }
 
+
+
 InvalidCrcDonePayload::InvalidCrcDonePayload(const char* file_name) {
     strcpy_s(this->file_name, file_name); // Use strcpy_s for safer copying
 }
@@ -82,7 +92,8 @@ const char* InvalidCrcDonePayload::getFileName() const {
     return file_name;
 }
 
-// Constructor for SendFilePayload
+
+
 SendFilePayload::SendFilePayload(uint32_t content_size, uint32_t orig_file_size, uint16_t packet_number, uint16_t total_packets, char file_name[])
     : content_size(content_size), orig_file_size(orig_file_size), packet_number(packet_number), total_packets(total_packets) {
     // Attempt to copy the file name
