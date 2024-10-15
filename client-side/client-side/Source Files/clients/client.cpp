@@ -44,3 +44,11 @@ std::string Client::getFilePath() const {
 UUID Client::getUuid() const {
 	return this->uuid;
 }
+
+Client Client::setupClient(Client client, const std::string& ip, int port, const std::string& name, const std::string& filePath) {
+	client.setAddress(ip);
+	client.setPort(port);
+	client.setName(name);
+	client.setFilePath(filePath);
+	return client;
+}

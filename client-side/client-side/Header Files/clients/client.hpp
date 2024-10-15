@@ -24,6 +24,7 @@ public:
 	std::string getName() const;
 	std::string getFilePath() const;
 	UUID getUuid() const;
+	Client setupClient(Client client, const std::string& ip, int port, const std::string& name, const std::string& filePath);
 };
 
 #endif

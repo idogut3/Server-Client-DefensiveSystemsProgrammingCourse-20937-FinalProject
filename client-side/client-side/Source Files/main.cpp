@@ -15,56 +15,54 @@ static bool transferValidation(client& client, string ip_port, string name, stri
 		return false;
 	}
 
-	client.setaddress(ip);
-	client.setport(port);
-	client.setname(name);
-	client.setfilepath(file_path);
+	setupClient(client, ip, port, name, file_path);
 
 	return true;
 }
 
-////static Client createClient() {
-////	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
-////	string line, ip_port, client_name, client_file_path;
-////	ifstream transfer_file(transfer_path);
-////	int lines = 1, invalid_file_data = 0;
-////	Client client;
-////
-////	if (!transfer_file.is_open()) {
-////		throw std::runtime_error("Error opening the 'transfer.info' file, aborting program.");
-////	}
-////
-////	while (getline(transfer_file, line)) {
-////		cout << "'" << line << "' " << line.length() << endl;
-////		switch (lines) {
-////		case 1:
-////			ip_port = line;
-////			break;
-////		case 2:
-////			client_name = line;
-////			break;
-////		case 3:
-////			client_file_path = line;
-////			break;
-////		default:
-////			break;
-////		}
-////		lines++;
-////	}
-////
-////	if (lines != 4) {
-////		throw std::invalid_argument("Error: transfer.info file contains invalid data.");
-////	}
-////
-////	if (!transferValidation(client, ip_port, client_name, client_file_path)) {
-////		throw std::invalid_argument("Error: transfer.info file contains invalid data.");
-////	}
-////
-////	transfer_file.close();
-////	return client;
-////
-////}
-////
+static Client createClient() {
+	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
+	string line, ip_port, client_name, client_file_path;
+	ifstream transfer_info_file(transfer_path);
+	
+	int lines = 1;
+	Client client;
+
+	if (!transfer_info_file.is_open()) {
+		throw std::runtime_error("Error opening 'transfer.info' - exiting");
+	}
+
+	while (getline(transfer_info_file, line)) {
+		cout << "'" << line << "' " << line.length() << endl;
+		switch (lines) {
+		case 1:
+			ip_port = line;
+			break;
+		case 2:
+			client_name = line;
+			break;
+		case 3:
+			client_file_path = line;
+			break;
+		default:
+			break;
+		}
+		lines++;
+	}
+
+	if (lines != 4) {
+		throw std::invalid_argument("Error: transfer.info contains too many lines / not enough lines");
+	}
+
+	if (!transferValidation(client, ip_port, client_name, client_file_path)) {
+		throw std::invalid_argument("Error: transfer.info contains invalid data.");
+	}
+
+	transfer_info_file.close(); 
+	return client;
+
+}
+
 ////static string read_from_me_info(Client& client) {
 ////	string path_info = EXE_DIR_FILE_PATH("me.info");
 ////	string line, client_name, client_id, private_key;
