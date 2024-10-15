@@ -23,6 +23,8 @@ public:
 	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload)
 }
 
+
+
 class ReconnectRequest : public Request {
 private:
 	ReconnectionPayload payload;
@@ -32,6 +34,8 @@ public:
 
 };
 
+
+
 class ValidCrcRequest : public Request {
 private:
 	ValidCrcPayload payload;
@@ -39,6 +43,8 @@ private:
 public:
 	ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
 };
+
+
 
 class InvalidCrcRequest : public Request {
 private:
@@ -48,6 +54,8 @@ public:
 	InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
 };
 
+
+
 class InvalidCrcDoneRequest : public Request {
 private:
 	InvalidCrcDonePayload payload;
@@ -55,6 +63,8 @@ private:
 public:
 	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
 };
+
+
 
 class SendFileRequest : public Request {
 private:

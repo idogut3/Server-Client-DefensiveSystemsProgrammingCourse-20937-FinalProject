@@ -22,6 +22,8 @@ public:
     const char* getPublicKey() const;
 };
 
+
+
 class ReconnectionPayload : Payload {
 private:
     char username[255];
@@ -31,6 +33,8 @@ public:
 
     const char* getUsername() const;
 };
+
+
 
 class ValidCrcPayload : Payload {
 protected:
@@ -42,6 +46,8 @@ public:
 };
 
 
+
+
 class InvalidCrcPayload : Payload {
 protected:
     char file_name[255];
@@ -51,6 +57,8 @@ public:
     const char* getFileName() const;
 };
 
+
+
 class InvalidCrcDonePayload : Payload {
 protected:
     char file_name[255];
@@ -59,6 +67,8 @@ public:
     InvalidCrcDonePayload(const char* file_name);
     const char* getFileName() const;
 };
+
+
 
 class SendFilePayload {
 protected:
