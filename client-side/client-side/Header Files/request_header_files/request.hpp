@@ -8,17 +8,17 @@ protected:
 	uint8_t version;
 	uint16_t code;
 	uint32_t payload_size;
-	
+
 public:
 	RequestHeader(UUID uuid, uint16_t code, uint32_t payload_size);
 	UUID getUUID() const;
 	uint8_t getVersion() const;
 	uint16_t getCode() const;
-	uint32_t getPayloadSize() const
-
+	uint32_t getPayloadSize() const;
+	vector<uint8_t> pack_header() const;
 };
 
-class Payload{};
+class Payload {};
 
 class Request {
 protected:
@@ -27,9 +27,11 @@ protected:
 public:
 	Request(RequestHeader header);
 
-    RequestHeader getHeader() const { return header;}
+	RequestHeader getHeader() const { return header; }
 	virtual Payload getPayload() const = 0;
 
+	// Pure Virtual function, each request derived class will implement this function.
+	virtual bool run(tcp::socket& sock) = 0;
 };
 
 #endif 

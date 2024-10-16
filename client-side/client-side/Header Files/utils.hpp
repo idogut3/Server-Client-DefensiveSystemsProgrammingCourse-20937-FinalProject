@@ -25,15 +25,19 @@ namespace uuids = boost::uuids;
 
 using std::cout;
 using std::cin;
+
+using std::vector;
 using std::string;
 using std::ifstream;
 using std::ofstream;
 using std::fstream;
+
 using boost::asio::ip::tcp;
 using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
 using UUIDGenerator = boost::uuids::string_generator;  
 using boost::uuids::to_string;
+using boost::endian::native_to_little;
 
 constexpr auto VERSION = 3;
 constexpr auto NAME_LENGTH = 255;

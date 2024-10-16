@@ -1,4 +1,8 @@
 #include "client-side\Header Files\utils.hpp"
+#include "Header Files\request_header_files\request.hpp"
+#include "Header Files\request_header_files\requests.hpp"
+#include "Header Files\request_header_files\requests_payloads.hpp"
+
 
 static bool transferValidation(client& client, string ip_port, string name, string file_path) {
 	size_t colon_postion = ip_port.find(':');
@@ -133,8 +137,11 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 //
 //	// If me.info does not exist, send Registration request.
 //	if (!filesystem::exists(EXE_DIR_FILE_PATH("me.info"))) {
-//		Registration registration(client.getUuid(), Codes::REGISTRATION_C, PayloadSize::REGISTRATION_P, client.getName().c_str());
-//		operation_success = registration.run(sock);
+//
+//		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
+//		RegistrationPayload registration_payload(client.getName().c_str());
+//		RegisterRequest register_request(request_header, registration_payload)
+//		// operation_success = register_request.run(sock);
 //
 //		if (!operation_success) {
 //			FATAL_MESSAGE_RETURN("Registration");
