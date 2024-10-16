@@ -13,11 +13,19 @@
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/endian/conversion.hpp>
 
+#include "cipher_utils/AESWrapper.hpp"
+#include "cipher_utils/Base64Wrapper.hpp"
+#include "cipher_utils/RSAWrapper.hpp"
+
+
 namespace uuids = boost::uuids;
 
 using std::cout;
 using std::cin;
 using std::string;
+using std::ifstream;
+using std::ofstream;
+using std::fstream;
 using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
 using UUIDGenerator = boost::uuids::string_generator;  
