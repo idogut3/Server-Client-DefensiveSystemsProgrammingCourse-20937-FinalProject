@@ -1,7 +1,6 @@
-#include "Header Files\utils.hpp"
-#include "Header Files\cipher_utils\Base64_helper.hpp"
+#include "Header Files\cipher_utils\Base64Wrapper.hpp"
 
-string Base64Helper::encode(const string& str)
+std::string Base64Wrapper::encode(const std::string& str)
 {
 	std::string encoded;
 	CryptoPP::StringSource ss(str, true,
@@ -13,7 +12,7 @@ string Base64Helper::encode(const string& str)
 	return encoded;
 }
 
-string Base64Helper::decode(const string& str)
+std::string Base64Wrapper::decode(const std::string& str)
 {
 	std::string decoded;
 	CryptoPP::StringSource ss(str, true,

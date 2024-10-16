@@ -30,7 +30,7 @@ constexpr auto REQUEST_HEADER_SIZE = 23;
 constexpr auto RESPONSE_HEADER_SIZE = 7;
 constexpr auto MAX_NAME_LENGTH = 100;
 constexpr auto HEX_ID_LENGTH = 32;
-const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug";
+const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change later cuz folders
 #define EXE_DIR_FILE_PATH(file_name) (EXE_DIR + "\\" + file_name)
 
 
