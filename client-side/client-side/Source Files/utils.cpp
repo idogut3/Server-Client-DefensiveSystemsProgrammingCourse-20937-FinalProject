@@ -32,7 +32,7 @@ bool is_integer(const std::string& num) {
 }
 
 
-uint16_t getCodeFromResponseHeader(const std::vector<uint8_t>& header) {
+uint16_t extractCodeFromResponseHeader(const std::vector<uint8_t>& header) {
 	// The code starts right after the version field, which is 1 byte
 	const size_t code_offset = 1;  // Version is 1 byte, so code starts at offset 1
 	uint16_t code = 0;
@@ -42,7 +42,7 @@ uint16_t getCodeFromResponseHeader(const std::vector<uint8_t>& header) {
 	return native_to_little(code);
 }
 
-uint32_t getPayloadSizeFromResponseHeader(const std::vector<uint8_t>& header) {
+uint32_t extractPayloadSizeFromResponseHeader(const std::vector<uint8_t>& header) {
 	// The payload size starts after the version (1 byte) and the code (2 bytes)
 	const size_t payload_size_offset = 1 + 2; // Version is 1 byte, code is 2 bytes
 	uint32_t  payload_size = 0;

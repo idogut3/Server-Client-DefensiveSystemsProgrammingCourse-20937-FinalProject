@@ -63,8 +63,8 @@ const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change lat
 
 UUID getUUIDFromString(string client_id);
 bool is_integer(const std::string& num);
-uint16_t getCodeFromResponseHeader(const std::vector<uint8_t>&header);
-uint32_t getPayloadSizeFromResponseHeader(const std::vector<uint8_t>&header);
+uint16_t extractCodeFromResponseHeader(const std::vector<uint8_t>&header);
+uint32_t extractPayloadSizeFromResponseHeader(const std::vector<uint8_t>&header);
 
 
 #endif

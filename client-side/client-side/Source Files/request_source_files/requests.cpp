@@ -33,25 +33,26 @@ bool RegisterRequest::run(tcp::socket& sock) {
 			// Send the request to the server via the provided socket.
 			boost::asio::write(sock, boost::asio::buffer(request));
 
-			// Receive header from the server, get response code and payload_size
+			// Receiving the header from the server, extracting response code and payload_size
 			vector<uint8_t> response_header(RESPONSE_HEADER_SIZE);
 			boost::asio::read(sock, boost::asio::buffer(response_header, RESPONSE_HEADER_SIZE));
-			uint16_t response_code = getCodeFromResponseHeader(response_header);
-			uint32_t response_payload_size = get_response_payload_size(response_header);
+			uint16_t response_code = extractCodeFromResponseHeader(response_header);
+			uint32_t response_payload_size = extractPayloadSizeFromResponseHeader(response_header);
 
-			// Receive payload from the server, save it's length in a parameter length.
+			// Receiving the payload from the server and saving the num of bytes received from it
 			vector<uint8_t> response_payload(response_payload_size);
-			size_t length = boost::asio::read(sock, boost::asio::buffer(response_payload, response_payload_size));
+			size_t num_of_bytes_received_from_server = boost::asio::read(sock, boost::asio::buffer(response_payload, response_payload_size));
 
-			// If the code is not success, the payload_size for the code is not the same as the size received in the header, or the length of the payload is not the wanted length, print error.
-			if (response_code != Codes::REGISTRATION_SUCCEEDED_C || response_payload_size != PayloadSize::REGISTRATION_SUCCEEDED_P || length != response_payload_size) {
-				throw std::invalid_argument("server responded with an error.");
+			// If the code is wrong or we didn't receive enough bytes or the payload size we got is wrong
+			if (response_code != Codes::REGISTRATION_CODE || response_payload_size != PayloadSize::REGISTRATION_SUCCEEDED_PAYLOAD_SIZE || num_of_bytes_received_from_server != response_payload_size) {
+				throw std::invalid_argument("server responded with an error");
 			}
 			// The Registration succeeded, set the uuid to the id the server responded with.
-			for (int i = 0; i < response_payload.size(); i++) {
+			/*for (int i = 0; i < response_payload.size(); i++) {
 				uuid.data[i] = (response_payload[i] >> 4);
 				uuid.data[i + 1] = (response_payload[i] & 0xf);
-			}
+			}*/
+			std::memcpy(this->uuid.data, response_payload, 16);
 			// If this code is reached, there was no error and the Registration was successful, so we break from the loop.
 			break;
 		}
