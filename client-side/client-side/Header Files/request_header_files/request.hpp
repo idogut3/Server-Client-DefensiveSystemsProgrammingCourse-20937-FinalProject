@@ -31,6 +31,7 @@ public:
 	virtual Payload getPayload() const = 0;
 
 	// Pure Virtual function, each request derived class will implement this function.
+	vitrual vector<uint8_t> pack_request();
 	virtual bool run(tcp::socket& sock) = 0;
 };
 
