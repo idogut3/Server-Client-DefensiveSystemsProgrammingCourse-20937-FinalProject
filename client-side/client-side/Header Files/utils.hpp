@@ -46,8 +46,18 @@ constexpr auto REQUEST_HEADER_SIZE = 23;
 constexpr auto RESPONSE_HEADER_SIZE = 7;
 constexpr auto MAX_NAME_LENGTH = 100;
 constexpr auto HEX_ID_LENGTH = 32;
+constexpr auto CONTENT_SIZE_PER_PACKET = 1024;
+constexpr auto MAX_FAILS = 3;
+
 const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change later cuz folders
 #define EXE_DIR_FILE_PATH(file_name) (EXE_DIR + "\\" + file_name)
+#define FATAL_MESSAGE_RETURN(type) \
+	cerr << "Fatal: " << type << " request failed.\n"; \
+	return;
+
+#define TOTAL_PACKETS(content_size) \
+	((content_size % CONTENT_SIZE_PER_PACKET) ? (content_size/CONTENT_SIZE_PER_PACKET + 1) : content_size/CONTENT_SIZE_PER_PACKET)
+
 
 
 
