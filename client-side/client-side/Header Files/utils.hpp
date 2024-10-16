@@ -17,6 +17,9 @@
 #include "cipher_utils/Base64Wrapper.hpp"
 #include "cipher_utils/RSAWrapper.hpp"
 
+#include "codes.hpp"
+#include "payloads_sizes.hpp"
+
 
 namespace uuids = boost::uuids;
 
@@ -26,6 +29,7 @@ using std::string;
 using std::ifstream;
 using std::ofstream;
 using std::fstream;
+using boost::asio::ip::tcp;
 using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
 using UUIDGenerator = boost::uuids::string_generator;  
@@ -44,6 +48,7 @@ const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change lat
 
 
 UUID getUUIDFromString(string client_id);
+bool is_integer(const std::string& num);
 
 
 

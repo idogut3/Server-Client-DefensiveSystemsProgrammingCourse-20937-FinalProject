@@ -128,15 +128,15 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 }
 
 //static void run_client(tcp::socket& sock, Client& client) {
-//	bool op_success;
+//	bool operation_success;
 //	string private_key, decrypted_aes_key;
 //
 //	// If me.info does not exist, send Registration request.
 //	if (!filesystem::exists(EXE_DIR_FILE_PATH("me.info"))) {
 //		Registration registration(client.getUuid(), Codes::REGISTRATION_C, PayloadSize::REGISTRATION_P, client.getName().c_str());
-//		op_success = registration.run(sock);
+//		operation_success = registration.run(sock);
 //
-//		if (!op_success) {
+//		if (!operation_success) {
 //			FATAL_MESSAGE_RETURN("Registration");
 //		}
 //
@@ -146,9 +146,9 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 //		private_key = prevKeyWrapper.getPrivateKey();
 //		save_to_files(client.getName(), client.getUuid(), private_key);
 //		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
-//		op_success = sending_pub_key.run(sock);
+//		operation_success = sending_pub_key.run(sock);
 //
-//		if (!op_success) {
+//		if (!operation_success) {
 //			FATAL_MESSAGE_RETURN("Sending Public Key");
 //		}
 //
@@ -162,9 +162,9 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 //
 //		// Send Reconnection request to the server.
 //		Reconnection reconnection(client.getUuid(), Codes::RECONNECTION_C, PayloadSize::RECONNECTION_P, client.getName().c_str());
-//		op_success = reconnection.run(sock);
+//		operation_success = reconnection.run(sock);
 //
-//		if (!op_success) {
+//		if (!operation_success) {
 //			FATAL_MESSAGE_RETURN("Reconnection");
 //		}
 //
@@ -188,9 +188,9 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 //		// Save the total packets and send the Sending File request to the server.
 //		uint16_t total_packs = TOTAL_PACKETS(content_size);
 //		SendingFile sendingFile(client.getUuid(), Codes::SENDING_FILE_C, PayloadSize::SENDING_FILE_P, content_size, orig_size, total_packs, client.getFilePath().c_str(), encrypted_content);
-//		op_success = sendingFile.run(sock);
+//		operation_success = sendingFile.run(sock);
 //		// If the sending file request did not succeed, add 1 to sending file error counter and continue the loop.
-//		if (!op_success) {
+//		if (!operation_success) {
 //			file_error_cnt++;
 //			continue;
 //		}
@@ -218,9 +218,7 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 //		ValidCrc valid_crc(client.getUuid(), Codes::VALID_CRC_C, PayloadSize::VALID_CRC_P, client.getFilePath().c_str());
 //	}
 //}
-//
-//
-//
+
 //int main()
 //{
 //	std::cout << "Hello World!\n";
