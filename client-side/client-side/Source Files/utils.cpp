@@ -46,6 +46,6 @@ uint32_t extractPayloadSizeFromResponseHeader(const vector<uint8_t>& header) {
 
 	uint32_t combined = (static_cast<uint32_t>(first) << 24) | (static_cast<uint32_t>(second) << 16) | (static_cast<uint32_t>(third) << 8) | forth;
 
-	uint32_t native_code = little_to_native(combined);
-	return native_code;
+	uint32_t native_payload_size = little_to_native(combined);
+	return native_payload_size;
 }
