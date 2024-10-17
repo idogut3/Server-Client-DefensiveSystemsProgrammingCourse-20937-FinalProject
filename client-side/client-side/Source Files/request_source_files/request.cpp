@@ -17,6 +17,11 @@ uint32_t RequestHeader::getPayloadSize() const {
 	return this->payload_size;
 }
 
+void RequestHeader::setUUIDFromRawBytes(const std::vector<uint8_t>& uuid_bytes) {
+	// Assuming response_payload is already validated to be exactly 16 bytes
+	std::copy(uuid_bytes.begin(), uuid_bytes.end(), uuid.data.begin());
+}
+
 vector<uint8_t> RequestHeader::pack_header() const {
 	vector<uint8_t> request(REQUEST_HEADER_SIZE + this->payload_size);
 

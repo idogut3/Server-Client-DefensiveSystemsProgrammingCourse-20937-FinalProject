@@ -12,9 +12,13 @@ protected:
 public:
 	RequestHeader(UUID uuid, uint16_t code, uint32_t payload_size);
 	UUID getUUID() const;
+
 	uint8_t getVersion() const;
 	uint16_t getCode() const;
 	uint32_t getPayloadSize() const;
+
+	void setUUIDFromRawBytes(const std::vector<uint8_t>& uuid_bytes);
+
 	vector<uint8_t> pack_header() const;
 };
 

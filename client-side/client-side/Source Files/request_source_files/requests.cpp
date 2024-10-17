@@ -48,26 +48,22 @@ bool RegisterRequest::run(tcp::socket& sock) {
 				throw std::invalid_argument("server responded with an error");
 			}
 			// The Registration succeeded, set the uuid to the id the server responded with.
-			/*for (int i = 0; i < response_payload.size(); i++) {
-				uuid.data[i] = (response_payload[i] >> 4);
-				uuid.data[i + 1] = (response_payload[i] & 0xf);
-			}*/
-			std::memcpy(this->uuid.data, response_payload, 16);
-			// If this code is reached, there was no error and the Registration was successful, so we break from the loop.
-			break;
+			this->getHeader().setUUIDFromRawBytes(response_payload);
+
+			break; // Existing the loop Registration was successful
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;
 		}
-		// Increment the i by 1 each iteration.
-		times_sent++;
+
+		times_sent++; // Meaning we failed registering 1 time because we catched an exception 
 	}
 
-	// If the i reached 3, return false.
+	// If the times_sent reached MAX_FAILS, returning false
 	if (times_sent == MAX_FAILS) {
 		return false;
 	}
-	// If the client succeeded, return true.
+	// If the the registration succeeded, return true.
 	return true;
 }
 
