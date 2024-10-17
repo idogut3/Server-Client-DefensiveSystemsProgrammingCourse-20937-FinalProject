@@ -111,25 +111,34 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 	string my_uuid = uuids::to_string(uuid);
 	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
 
-	string base64_private_key = Base64Wrapper::encode(private_key);
 	string path_info = EXE_DIR_FILE_PATH("me.info");
-	string path_key = EXE_DIR_FILE_PATH("priv.key");
-	ofstream info_file(path_info), key_file(path_key);
+
+	ofstream info_file(path_info);
 
 	if (!info_file.is_open()) {
 		throw std::runtime_error("Error opening the 'me.info' - exiting");
 	}
-	if (!key_file.is_open()) {
-		throw std::runtime_error("Error opening the 'priv.key' - exiting");
-	}
 
-	// Writing to both files.
+	// Writing to info file
 	info_file << name << endl << id << endl << base64_private_key << endl;
-	key_file << base64_private_key << endl;
 
 	info_file.close();
+}
+static void save_priv_key_file(string private_key) {
+	// Encode the private key to base64 and open files
+	string base64PrivKey = Base64Wrapper::encode(priv_key);
+	string path_key = EXE_DIR_FILE_PATH("priv.key");
+
+	ofstream key_file(path_key);
+
+	if (!key_file.is_open()) {
+		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
+	}
+	// Writing to priv.key file
+	key_file << base64PrivKey << endl;
 	key_file.close();
 }
+
 
 static void run_client(tcp::socket& sock, Client& client) {
 	bool operation_success;
@@ -141,17 +150,23 @@ static void run_client(tcp::socket& sock, Client& client) {
 		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
 		RegistrationPayload registration_payload(client.getName().c_str());
 		RegisterRequest register_request(request_header, registration_payload)
-		// operation_success = register_request.run(sock);
+		operation_success = register_request.run(sock);
 
 		if (!operation_success) {
 			FATAL_MESSAGE_RETURN("Registration");
 		}
 
 		// Create RSA pair, save fields data into me.info and prev.key files, and send a SendingPublicKey request.
-		RSAPrivateWrapper prevKeyWrapper;
-		string public_key = prevKeyWrapper.getPublicKey();
-		private_key = prevKeyWrapper.getPrivateKey();
-		save_to_files(client.getName(), client.getUuid(), private_key);
+		RSAPrivateWrapper privateKeyWrapper;
+
+		string public_key = privateKeyWrapper.getPublicKey();
+		private_key = privateKeyWrapper.getPrivateKey();
+
+		save_me_info(client.getName(), client.getUuid(), private_key);
+		save_priv_key_file(private_key);
+
+		// TODOOO : save_to_files(client.getName(), client.getUuid(), private_key);
+
 		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
 		operation_success = sending_pub_key.run(sock);
 
@@ -161,7 +176,7 @@ static void run_client(tcp::socket& sock, Client& client) {
 
 		// Get the encrypted AES key and decrypt it.
 		string encrypted_aes_key = sending_pub_key.getEncryptedAesKey();
-		decrypted_aes_key = prevKeyWrapper.decrypt(encrypted_aes_key);
+		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
 	}
 	else { // If me.info does exist, read id and send reconnection request.
 		// Read the fields from the client.
@@ -177,11 +192,11 @@ static void run_client(tcp::socket& sock, Client& client) {
 
 		// Decode the private key and create the decryptor.
 		private_key = Base64Wrapper::decode(key_base64);
-		RSAPrivateWrapper prevKeyWrapper(private_key);
+		RSAPrivateWrapper privateKeyWrapper(private_key);
 
 		// Get the encrypted AES key and decrypt it.
 		string encrypted_aes_key = reconnection.getEncryptedAesKey();
-		decrypted_aes_key = prevKeyWrapper.decrypt(encrypted_aes_key);
+		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
 	}
 	AESWrapper aesKeyWrapper(reinterpret_cast<const unsigned char*>(decrypted_aes_key.c_str()), decrypted_aes_key.size());
 	int file_error_cnt = 0, times_crc_sent = 0;
