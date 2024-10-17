@@ -110,6 +110,7 @@ static string read_me_info_file(Client& client) {
 static void save_me_info(string name, UUID uuid, string private_key) {
 	string my_uuid = uuids::to_string(uuid);
 	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
+	string base64_private_key = Base64Wrapper::encode(private_key);
 
 	string path_info = EXE_DIR_FILE_PATH("me.info");
 
@@ -126,17 +127,17 @@ static void save_me_info(string name, UUID uuid, string private_key) {
 }
 static void save_priv_key_file(string private_key) {
 	// Encode the private key to base64 and open files
-	string base64PrivKey = Base64Wrapper::encode(priv_key);
+	string base64_private_key = Base64Wrapper::encode(private_key);
 	string path_key = EXE_DIR_FILE_PATH("priv.key");
 
-	ofstream key_file(path_key);
+	ofstream private_key_file(path_key);
 
-	if (!key_file.is_open()) {
+	if (!private_key_file.is_open()) {
 		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
 	}
 	// Writing to priv.key file
-	key_file << base64PrivKey << endl;
-	key_file.close();
+	private_key_file << base64_private_key << endl;
+	private_key_file.close();
 }
 
 
