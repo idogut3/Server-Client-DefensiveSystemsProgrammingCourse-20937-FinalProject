@@ -163,10 +163,9 @@ static void run_client(tcp::socket& sock, Client& client) {
 		string public_key = privateKeyWrapper.getPublicKey();
 		private_key = privateKeyWrapper.getPrivateKey();
 
+		// saving files as required for future (reconnection etc)
 		save_me_info(client.getName(), client.getUuid(), private_key);
 		save_priv_key_file(private_key);
-
-		// TODOOO : save_to_files(client.getName(), client.getUuid(), private_key);
 
 		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
 		operation_success = sending_pub_key.run(sock);
