@@ -38,6 +38,7 @@ const UUID NIL_UUID = boost::uuids::nil_uuid();
 using UUIDGenerator = boost::uuids::string_generator;  
 using boost::uuids::to_string;
 using boost::endian::little_to_native;
+using boost::endian::native_to_little;
 
 
 constexpr auto VERSION = 3;
