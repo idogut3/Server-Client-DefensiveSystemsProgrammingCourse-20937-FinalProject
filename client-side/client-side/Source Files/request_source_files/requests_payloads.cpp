@@ -11,8 +11,8 @@ RegistrationPayload::RegistrationPayload(const char* username) {
 	}
 }
 
-vector<uint8_t> RegistrationPayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes RegistrationPayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -45,8 +45,8 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 	return public_key;
 }
 
-vector<uint8_t> SendPublicKeyPayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes SendPublicKeyPayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -68,8 +68,8 @@ ReconnectionPayload::ReconnectionPayload(const char* username) {
 const char* ReconnectionPayload::getUsername() const {
 	return username;
 }
-vector<uint8_t> ReconnectionPayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes ReconnectionPayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -91,8 +91,8 @@ const char* ValidCrcPayload::getFileName() const {
 	return file_name;
 }
 
-vector<uint8_t> ValidCrcPayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes ValidCrcPayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -114,8 +114,8 @@ const char* InvalidCrcPayload::getFileName() const {
 	return file_name;
 }
 
-vector<uint8_t> InvalidCrcPayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes InvalidCrcPayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -132,8 +132,8 @@ const char* InvalidCrcDonePayload::getFileName() const {
 	return file_name;
 }
 
-vector<uint8_t> InvalidCrcDonePayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes InvalidCrcDonePayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 
@@ -153,8 +153,8 @@ SendFilePayload::SendFilePayload(uint32_t content_size, uint32_t orig_file_size,
 	}
 }
 
-vector<uint8_t> SendFilePayload::pack_payload() const {
-	vector<uint8_t> packed_payload();
+Bytes SendFilePayload::pack_payload() const {
+	Bytes packed_payload();
 
 	// TODO:: Add implementation
 

@@ -15,8 +15,10 @@ RegistrationPayload RegisterRequest::getPayload() const {
 */
 Bytes RegisterRequest::pack_request() const {
 	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
-	Bytes packed_payload = this->getPayload().pack_payload();
-	Bytes request = ; 
+	RegistrationPayload rar = this->getPayload().pack_header();
+	rar.
+	Bytes packed_payload = this->getHeader();
+	// Bytes request = ; 
 	// add packed header and packed payload together and return them
 
 	return request;

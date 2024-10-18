@@ -7,7 +7,7 @@ protected:
 public:
 	RegistrationPayload(const char* username);
 	const char* getUsername() const { return username;}
-
+    
 };
 
 
