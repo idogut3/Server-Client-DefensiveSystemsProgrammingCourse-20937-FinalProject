@@ -31,7 +31,7 @@ protected:
 public:
 	Request(RequestHeader header);
 
-	RequestHeader getHeader() const { return header; }
+	RequestHeader getHeader() const;
 	virtual Payload getPayload() const = 0;
 
 	// Pure Virtual function, each request derived class will implement this function.

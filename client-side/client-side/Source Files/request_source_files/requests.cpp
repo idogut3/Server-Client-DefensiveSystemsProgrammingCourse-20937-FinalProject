@@ -7,9 +7,6 @@ RegisterRequest::RegisterRequest(RequestHeader header, RegistrationPayload paylo
 Payload RegisterRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader RegisterRequest::getHeader() const {
-	return this->header;
-}
 
 
 /*
@@ -77,12 +74,9 @@ SendPublicKeyRequest::SendPublicKeyRequest(RequestHeader header, SendPublicKeyPa
 Payload SendPublicKeyRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader SendPublicKeyRequest::getHeader() const {
-	return this->header;
-}
 
-SendPublicKeyRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> request(REQUEST_HEADER_SIZE + this-> );
+vector<uint8_t> SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
+	vector<uint8_t> request(REQUEST_HEADER_SIZE + this->getHeader()->getPayloadSize());
 
 	// Saving the numeric type in little endian order
 	uint16_t code_in_little_endian = native_to_little(this->code);
@@ -116,9 +110,6 @@ ReconnectRequest::ReconnectRequest(RequestHeader header, ReconnectionPayload pay
 Payload ReconnectRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader ReconnectRequest::getHeader() const {
-	return this->header;
-}
 
 ReconnectRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
 	vector<uint8_t> ret(1);
@@ -133,9 +124,6 @@ ValidCrcRequest::ValidCrcRequest(RequestHeader header, ValidCrcPayload payload)
 Payload ValidCrcRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader ValidCrcRequest::getHeader() const {
-	return this->header;
-}
 
 ValidCrcRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
 	vector<uint8_t> ret(1);
@@ -149,9 +137,6 @@ InvalidCrcRequest::InvalidCrcRequest(RequestHeader header, InvalidCrcPayload pay
 Payload InvalidCrcRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader InvalidCrcRequest::getHeader() const {
-	return this->header;
-}
 
 InvalidCrcRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
 	vector<uint8_t> ret(1);
@@ -163,9 +148,6 @@ InvalidCrcDoneRequest::InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDon
 
 Payload InvalidCrcDoneRequest::getPayload() const {
 	return this->payload;
-}
-RequestHeader InvalidCrcDoneRequest::getHeader() const {
-	return this->header;
 }
 
 InvalidCrcDoneRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
@@ -180,10 +162,6 @@ SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
 Payload SendFileRequest::getPayload() const {
 	return this->payload;
 }
-RequestHeader SendFileRequest::getHeader() const {
-	return this->header;
-}
-
 SendFileRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
 	vector<uint8_t> ret(1);
 	return ret(1)

@@ -22,6 +22,10 @@ void RequestHeader::setUUIDFromRawBytes(const std::vector<uint8_t>& uuid_bytes) 
 	std::copy(uuid_bytes.begin(), uuid_bytes.end(), uuid.data.begin());
 }
 
+RequestHeader Request::getHeader() {
+	return this->header;
+}
+
 vector<uint8_t> RequestHeader::pack_header() const {
 	vector<uint8_t> request(REQUEST_HEADER_SIZE + this->payload_size);
 
