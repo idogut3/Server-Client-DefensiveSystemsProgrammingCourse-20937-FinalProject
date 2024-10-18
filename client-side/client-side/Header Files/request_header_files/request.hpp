@@ -17,14 +17,14 @@ public:
 	uint16_t getCode() const;
 	uint32_t getPayloadSize() const;
 
-	void setUUIDFromRawBytes(const std::vector<uint8_t>& uuid_bytes);
+	void setUUIDFromRawBytes(const Bytes& uuid_bytes);
 
-	vector<uint8_t> pack_header() const;
+	Bytes pack_header() const;
 };
 
 class Payload {
 public:
-	virtual vector<uint8_t> pack_payload() const = 0;
+	virtual Bytes pack_payload() const = 0;
 };
 
 class Request {
@@ -38,7 +38,7 @@ public:
 	virtual Payload getPayload() const = 0;
 
 	// Pure Virtual function, each request derived class will implement this function.
-	vitrual vector<uint8_t> pack_request() const = 0;
+	vitrual Bytes pack_request() const = 0;
 	virtual bool run(tcp::socket& sock) = 0;
 };
 

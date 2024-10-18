@@ -40,6 +40,8 @@ using boost::uuids::to_string;
 using boost::endian::little_to_native;
 using boost::endian::native_to_little;
 
+using Byte = uint8_t;
+using Bytes = std::vector<Byte>;
 
 constexpr auto VERSION = 3;
 constexpr auto NAME_LENGTH = 255;

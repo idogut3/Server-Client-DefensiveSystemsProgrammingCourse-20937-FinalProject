@@ -17,7 +17,7 @@ uint32_t RequestHeader::getPayloadSize() const {
 	return this->payload_size;
 }
 
-void RequestHeader::setUUIDFromRawBytes(const std::vector<uint8_t>& uuid_bytes) {
+void RequestHeader::setUUIDFromRawBytes(const Bytes& uuid_bytes) {
 	// Assuming response_payload is already validated to be exactly 16 bytes
 	std::copy(uuid_bytes.begin(), uuid_bytes.end(), uuid.data.begin());
 }
@@ -26,8 +26,8 @@ RequestHeader Request::getHeader() {
 	return this->header;
 }
 
-vector<uint8_t> RequestHeader::pack_header() const {
-	vector<uint8_t> request(REQUEST_HEADER_SIZE + this->payload_size);
+Bytes RequestHeader::pack_header() const {
+	Bytes request(REQUEST_HEADER_SIZE + this->payload_size);
 
 	// Saving the numeric type in little endian order
 	uint16_t code_in_little_endian = native_to_little(this->code);

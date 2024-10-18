@@ -13,9 +13,9 @@ Payload RegisterRequest::getPayload() const {
 	This method packs the header and payload for the registration request in a form of uint8_t vector.
 	All numeric fields are ordered by little endian order.
 */
-vector<uint8_t> RegisterRequest::pack_request() const {
-	vector<uint8_t> request = pack_header();
-
+Bytes RegisterRequest::pack_request() const {
+	Bytes request = pack_header();
+	Bytes
 	std::copy(name, name + sizeof(name), request.begin() + REQUEST_HEADER_SIZE);
 
 	return request;
@@ -26,7 +26,7 @@ vector<uint8_t> RegisterRequest::pack_request() const {
 bool RegisterRequest::run(tcp::socket& sock) {
 	// Pack request fields into vector and initialize parameter times_sent to 0.
 	int times_sent = 1;
-	vector<uint8_t> request = this->pack_request();
+	Bytes request = this->pack_request();
 
 	while (times_sent <= MAX_FAILS) {
 		try {
@@ -34,13 +34,13 @@ bool RegisterRequest::run(tcp::socket& sock) {
 			boost::asio::write(sock, boost::asio::buffer(request));
 
 			// Receiving the header from the server, extracting response code and payload_size
-			vector<uint8_t> response_header(RESPONSE_HEADER_SIZE);
+			Bytes response_header(RESPONSE_HEADER_SIZE);
 			boost::asio::read(sock, boost::asio::buffer(response_header, RESPONSE_HEADER_SIZE));
 			uint16_t response_code = extractCodeFromResponseHeader(response_header);
 			uint32_t response_payload_size = extractPayloadSizeFromResponseHeader(response_header);
 
 			// Receiving the payload from the server and saving the num of bytes received from it
-			vector<uint8_t> response_payload(response_payload_size);
+			Bytes response_payload(response_payload_size);
 			size_t num_of_bytes_received_from_server = boost::asio::read(sock, boost::asio::buffer(response_payload, response_payload_size));
 
 			// If the code is wrong or we didn't receive enough bytes or the payload size we got is wrong
@@ -75,8 +75,8 @@ Payload SendPublicKeyRequest::getPayload() const {
 	return this->payload;
 }
 
-vector<uint8_t> SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
-	vector<uint8_t> request(REQUEST_HEADER_SIZE + this->getHeader()->getPayloadSize());
+Bytes SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
+	Bytes request(REQUEST_HEADER_SIZE + this->getHeader()->getPayloadSize());
 
 	// Saving the numeric type in little endian order
 	uint16_t code_in_little_endian = native_to_little(this->code);
@@ -111,8 +111,8 @@ Payload ReconnectRequest::getPayload() const {
 	return this->payload;
 }
 
-ReconnectRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> ret(1);
+Bytes ReconnectRequest::pack_request() { //TODO :NOT DONE
+	Bytes ret(1);
 	return ret(1)
 }
 
@@ -125,8 +125,8 @@ Payload ValidCrcRequest::getPayload() const {
 	return this->payload;
 }
 
-ValidCrcRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> ret(1);
+Bytes ValidCrcRequest::pack_request() { //TODO :NOT DONE
+	Bytes ret(1);
 	return ret(1)
 }
 
@@ -138,8 +138,8 @@ Payload InvalidCrcRequest::getPayload() const {
 	return this->payload;
 }
 
-InvalidCrcRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> ret(1);
+Bytes InvalidCrcRequest::pack_request() { //TODO :NOT DONE
+	Bytes ret(1);
 	return ret(1)
 }
 
@@ -150,8 +150,8 @@ Payload InvalidCrcDoneRequest::getPayload() const {
 	return this->payload;
 }
 
-InvalidCrcDoneRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> ret(1);
+Bytes InvalidCrcDoneRequest::pack_request() { //TODO :NOT DONE
+	Bytes ret(1);
 	return ret(1)
 }
 
@@ -162,7 +162,7 @@ SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
 Payload SendFileRequest::getPayload() const {
 	return this->payload;
 }
-SendFileRequest::vector<uint8_t> pack_request() { //TODO :NOT DONE
-	vector<uint8_t> ret(1);
+Bytes SendFileRequest::pack_request() { //TODO :NOT DONE
+	Bytes ret(1);
 	return ret(1)
 }
