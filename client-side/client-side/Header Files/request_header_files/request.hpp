@@ -22,7 +22,10 @@ public:
 	vector<uint8_t> pack_header() const;
 };
 
-class Payload {};
+class Payload {
+public:
+	virtual vector<uint8_t> pack_payload() const = 0;
+};
 
 class Request {
 protected:
