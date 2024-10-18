@@ -13,6 +13,7 @@ public:
 	RegisterRequest(RequestHeader header, RegistrationPayload payload);
 	Payload getPayload() const;
 
+	vector<uint8_t> pack_request() const;
 	bool run(tcp::socket& sock);
 };
 
