@@ -27,7 +27,7 @@ RequestHeader Request::getHeader() {
 }
 
 Bytes RequestHeader::pack_header() const {
-	Bytes request(REQUEST_HEADER_SIZE + this->payload_size);
+	Bytes packed_header(REQUEST_HEADER_SIZE);
 
 	// Saving the numeric type in little endian order
 	uint16_t code_in_little_endian = native_to_little(this->code);
@@ -38,21 +38,51 @@ Bytes RequestHeader::pack_header() const {
 	uint8_t* payload_size_in_little_endian_ptr = reinterpret_cast<uint8_t*>(&payload_size_in_little_endian);
 
 	// Adding fields to the vector
-	size_t postion = 0;
+	size_t position = 0;
 
-	std::copy(uuid.begin(), uuid.end(), request.begin()); // Copying the uuid to the beginning of request
-	postion += sizeof(uuid); // Move the position forward by the size of UUID
+	std::copy(uuid.begin(), uuid.end(), packed_header.begin()); // Copying the uuid to the beginning of packed_header
+	position += sizeof(uuid); // Move the position forward by the size of UUID
 
-	request[postion] = version; // after the uuid we insert the version
-	postion += sizeof(version); // Move the position forward by the size of version
+	packed_header[position] = version; // after the uuid we insert the version
+	position += sizeof(version); // Move the position forward by the size of version
 
-	std::copy(code_in_little_endian_ptr, code_in_little_endian_ptr + sizeof(code_in_little_endian), request.begin() + postion);
-	postion += sizeof(code); // Move the position forward by the size of code
+	std::copy(code_in_little_endian_ptr, code_in_little_endian_ptr + sizeof(code_in_little_endian), packed_header.begin() + position);
+	position += sizeof(code); // Move the position forward by the size of code
 
-	std::copy(payload_size_in_little_endian_ptr, payload_size_in_little_endian_ptr + sizeof(payload_size_in_little_endian), request.begin() + postion);
+	std::copy(payload_size_in_little_endian_ptr, payload_size_in_little_endian_ptr + sizeof(payload_size_in_little_endian), packed_header.begin() + position);
 
-	return request;
+	return packed_header;
 }
+
+/* USE THIS IF CODE DOESNT WORK
+
+Bytes RequestHeader::pack_header() const {
+	Bytes packed_header(REQUEST_HEADER_SIZE);
+
+	// Saving the numeric type in little endian order
+	uint16_t code_in_little_endian = native_to_little(this->code);
+	uint32_t payload_size_in_little_endian = native_to_little(this->payload_size);
+
+	// Adding fields to the vector
+	size_t position = 0;
+
+	std::copy(uuid.begin(), uuid.end(), packed_header.begin()); // Copying the uuid to the beginning of packed_header
+	position += sizeof(uuid); // Move the position forward by the size of UUID
+
+	packed_header[position] = version; // after the uuid we insert the version
+	position += sizeof(version); // Move the position forward by the size of version
+
+	// Instead of reinterpret_cast, use std::memcpy to safely copy the values
+	std::memcpy(packed_header.data() + position, &code_in_little_endian, sizeof(code_in_little_endian));
+	position += sizeof(code_in_little_endian); // Move the position forward by the size of code
+
+	std::memcpy(packed_header.data() + position, &payload_size_in_little_endian, sizeof(payload_size_in_little_endian));
+
+	return packed_header;
+}
+
+*/
+
 
 
 Request::Request(RequestHeader request_header)
