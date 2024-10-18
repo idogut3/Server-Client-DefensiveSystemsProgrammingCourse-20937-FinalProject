@@ -4,7 +4,7 @@
 RegisterRequest::RegisterRequest(RequestHeader header, RegistrationPayload payload)
 	: Request(header), payload(payload) {}
 
-Payload RegisterRequest::getPayload() const {
+RegistrationPayload RegisterRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -14,9 +14,10 @@ Payload RegisterRequest::getPayload() const {
 	All numeric fields are ordered by little endian order.
 */
 Bytes RegisterRequest::pack_request() const {
-	Bytes request = pack_header();
-	Bytes
-	std::copy(name, name + sizeof(name), request.begin() + REQUEST_HEADER_SIZE);
+	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
+	Bytes packed_payload = this->getPayload().pack_payload();
+	Bytes request = ; 
+	// add packed header and packed payload together and return them
 
 	return request;
 }
@@ -71,7 +72,7 @@ bool RegisterRequest::run(tcp::socket& sock) {
 SendPublicKeyRequest::SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload)
 	: Request(header), payload(payload) {}
 
-Payload SendPublicKeyRequest::getPayload() const {
+SendPublicKeyPayload SendPublicKeyRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -107,7 +108,7 @@ Bytes SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
 ReconnectRequest::ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
 	: Request(header), payload(payload) {}
 
-Payload ReconnectRequest::getPayload() const {
+ReconnectionPayload ReconnectRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -121,7 +122,7 @@ Bytes ReconnectRequest::pack_request() { //TODO :NOT DONE
 ValidCrcRequest::ValidCrcRequest(RequestHeader header, ValidCrcPayload payload)
 	: Request(header), payload(payload) {}
 
-Payload ValidCrcRequest::getPayload() const {
+ValidCrcPayload ValidCrcRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -134,7 +135,7 @@ Bytes ValidCrcRequest::pack_request() { //TODO :NOT DONE
 InvalidCrcRequest::InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload)
 	: Request(header), payload(payload) {}
 
-Payload InvalidCrcRequest::getPayload() const {
+InvalidCrcPayload InvalidCrcRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -146,7 +147,7 @@ Bytes InvalidCrcRequest::pack_request() { //TODO :NOT DONE
 InvalidCrcDoneRequest::InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload)
 	: Request(header), payload(payload) {}
 
-Payload InvalidCrcDoneRequest::getPayload() const {
+InvalidCrcDonePayload InvalidCrcDoneRequest::getPayload() const {
 	return this->payload;
 }
 
@@ -159,7 +160,7 @@ Bytes InvalidCrcDoneRequest::pack_request() { //TODO :NOT DONE
 SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
 	: Request(header), payload(payload) {}
 
-Payload SendFileRequest::getPayload() const {
+SendFilePayload SendFileRequest::getPayload() const {
 	return this->payload;
 }
 Bytes SendFileRequest::pack_request() { //TODO :NOT DONE

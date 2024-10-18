@@ -6,7 +6,8 @@ protected:
 	char username[255];
 public:
 	RegistrationPayload(const char* username);
-	const char* getUsername() const { return username; }
+	const char* getUsername() const { return username;}
+
 };
 
 
