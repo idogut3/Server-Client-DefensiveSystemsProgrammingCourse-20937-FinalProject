@@ -6,8 +6,10 @@ protected:
 	char username[255];
 public:
 	RegistrationPayload(const char* username);
+
 	const char* getUsername() const { return username;}
-    
+
+    Bytes pack_payload() const;
 };
 
 
@@ -19,8 +21,11 @@ protected:
 public:
 
     SendPublicKeyPayload(const char* username, const char* public_key);
+
     const char* getUsername() const;
     const char* getPublicKey() const;
+
+    Bytes pack_payload() const;
 };
 
 
@@ -33,6 +38,8 @@ public:
     ReconnectionPayload(const char* username);
 
     const char* getUsername() const;
+
+    Bytes pack_payload() const;
 };
 
 
@@ -43,7 +50,10 @@ protected:
 
 public:
     ValidCrcPayload(const char* file_name);
+
     const char* getFileName() const;
+
+    Bytes pack_payload() const;
 };
 
 
