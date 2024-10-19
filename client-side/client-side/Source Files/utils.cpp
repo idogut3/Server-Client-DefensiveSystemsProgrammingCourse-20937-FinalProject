@@ -32,7 +32,7 @@ bool is_integer(const std::string& num) {
 }
 
 
-uint16_t extractCodeFromResponseHeader(const vector<uint8_t>& header) {
+uint16_t extractCodeFromResponseHeader(const Bytes& header) {
 	uint8_t high = header[1], low = header[2];
 	uint16_t combined_bytes = (static_cast<uint16_t>(high) << 8) | low;
 
@@ -40,7 +40,7 @@ uint16_t extractCodeFromResponseHeader(const vector<uint8_t>& header) {
 	return native_code;
 }
 
-uint32_t extractPayloadSizeFromResponseHeader(const vector<uint8_t>& header) {
+uint32_t extractPayloadSizeFromResponseHeader(const Bytes& header) {
 	uint8_t first = header[3], second = header[4];
 	uint8_t third = header[5],  forth = header[6];
 
