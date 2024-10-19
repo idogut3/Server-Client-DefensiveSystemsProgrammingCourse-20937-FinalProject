@@ -5,13 +5,15 @@
 #include <iostream>
 #include <string>
 #include <string.h>    
+#include <vector>
 
 #include <boost/asio.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/nil.hpp>
+//#include <boost/uuid/nil.hpp>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/endian/conversion.hpp>
+#include <boost/uuid/string_generator.hpp>
 
 #include "cipher_utils/AESWrapper.hpp"
 #include "cipher_utils/Base64Wrapper.hpp"
@@ -35,7 +37,7 @@ using std::fstream;
 using boost::asio::ip::tcp;
 using UUID = boost::uuids::uuid;
 const UUID NIL_UUID = boost::uuids::nil_uuid();
-using UUIDGenerator = boost::uuids::string_generator;  
+using UUIDGenerator = boost::uuids::string_generator;
 using boost::uuids::to_string;
 using boost::endian::little_to_native;
 using boost::endian::native_to_little;
@@ -67,8 +69,8 @@ const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change lat
 
 UUID getUUIDFromString(string client_id);
 bool is_integer(const std::string& num);
-uint16_t extractCodeFromResponseHeader(const std::vector<uint8_t>&header);
-uint32_t extractPayloadSizeFromResponseHeader(const std::vector<uint8_t>&header);
+uint16_t extractCodeFromResponseHeader(const Bytes&header);
+uint32_t extractPayloadSizeFromResponseHeader(const Bytes&header);
 
 
 #endif

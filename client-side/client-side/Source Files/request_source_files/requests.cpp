@@ -13,16 +13,15 @@ RegistrationPayload RegisterRequest::getPayload() const {
 	This method packs the header and payload for the registration request in a form of uint8_t vector.
 	All numeric fields are ordered by little endian order.
 */
-Bytes RegisterRequest::pack_request() const {
-	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
-	RegistrationPayload rar = this->getPayload().pack_header();
-	rar.
-	Bytes packed_payload = this->getHeader();
-	// Bytes request = ; 
-	// add packed header and packed payload together and return them
-
-	return request;
-}
+//Bytes RegisterRequest::pack_request() const {
+//	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
+//	Bytes packed_payload = this->getPayload().pack_payload();
+//	// Bytes request = ; 
+//	// Bytes packed_payload = zip.pack_payload();
+//	// add packed header and packed payload together and return them
+//
+//	return request;
+//}
 
 
 
@@ -82,7 +81,7 @@ Bytes SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
 	Bytes request(REQUEST_HEADER_SIZE + this->getHeader()->getPayloadSize());
 
 	// Saving the numeric type in little endian order
-	uint16_t code_in_little_endian = native_to_little(this->code);
+	uint16_t code_in_little_endian = native_to_little(this->getHeader()->getCode());
 	uint32_t payload_size_in_little_endian = native_to_little(this->payload_size);
 
 	// Saving the bytes in little endian order as a byte array.

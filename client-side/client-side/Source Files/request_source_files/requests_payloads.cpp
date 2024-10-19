@@ -12,8 +12,7 @@ RegistrationPayload::RegistrationPayload(const char* username) {
 }
 
 Bytes RegistrationPayload::pack_payload() const {
-	Bytes 
-
+	Bytes packed_payload(5);
 	// TODO:: Add implementation
 
 	return packed_payload;

@@ -24,11 +24,11 @@ private:
 
 public:
 	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload);
-	SendPublicKeyPayload getPayload() const;
+	SendPublicKeyPayload getPayload() const override;
 
 	Bytes pack_request();
 	bool run(tcp::socket& sock);
-}
+};
 
 
 

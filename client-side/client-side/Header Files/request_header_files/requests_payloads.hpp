@@ -9,7 +9,7 @@ public:
 
 	const char* getUsername() const { return username;}
 
-    Bytes pack_payload() const;
+    Bytes pack_payload() const override;
 };
 
 

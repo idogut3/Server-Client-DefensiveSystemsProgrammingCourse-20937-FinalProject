@@ -141,108 +141,108 @@ static void save_priv_key_file(string private_key) {
 }
 
 
-static void run_client(tcp::socket& sock, Client& client) {
-	bool operation_success;
-	string private_key, decrypted_aes_key;
+//static void run_client(tcp::socket& sock, Client& client) {
+//	bool operation_success;
+//	string private_key, decrypted_aes_key;
+//
+//	// If me.info does not exist, send Registration request.
+//	if (!filesystem::exists(EXE_DIR_FILE_PATH("me.info"))) {
+//
+//		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
+//		RegistrationPayload registration_payload(client.getName().c_str());
+//		RegisterRequest register_request(request_header, registration_payload)
+//			operation_success = register_request.run(sock);
+//
+//		if (!operation_success) {
+//			FATAL_MESSAGE_RETURN("Registration");
+//		}
+//
+//		// Create RSA pair, save fields data into me.info and prev.key files, and send a SendingPublicKey request.
+//		RSAPrivateWrapper privateKeyWrapper;
+//
+//		string public_key = privateKeyWrapper.getPublicKey();
+//		private_key = privateKeyWrapper.getPrivateKey();
+//
+//		// saving files as required for future (reconnection etc)
+//		save_me_info(client.getName(), client.getUuid(), private_key);
+//		save_priv_key_file(private_key);
+//
+//		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
+//		operation_success = sending_pub_key.run(sock);
+//
+//		if (!operation_success) {
+//			FATAL_MESSAGE_RETURN("Sending Public Key");
+//		}
+//
+//		// Get the encrypted AES key and decrypt it.
+//		string encrypted_aes_key = sending_pub_key.getEncryptedAesKey();
+//		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
+//	}
+//	else { // If me.info does exist, read id and send reconnection request.
+//		// Read the fields from the client.
+//		string key_base64 = read_from_files(client);
+//
+//		// Send Reconnection request to the server.
+//		Reconnection reconnection(client.getUuid(), Codes::RECONNECTION_C, PayloadSize::RECONNECTION_P, client.getName().c_str());
+//		operation_success = reconnection.run(sock);
+//
+//		if (!operation_success) {
+//			FATAL_MESSAGE_RETURN("Reconnection");
+//		}
+//
+//		// Decode the private key and create the decryptor.
+//		private_key = Base64Wrapper::decode(key_base64);
+//		RSAPrivateWrapper privateKeyWrapper(private_key);
+//
+//		// Get the encrypted AES key and decrypt it.
+//		string encrypted_aes_key = reconnection.getEncryptedAesKey();
+//		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
+//	}
+//	AESWrapper aesKeyWrapper(reinterpret_cast<const unsigned char*>(decrypted_aes_key.c_str()), decrypted_aes_key.size());
+//	int file_error_cnt = 0, times_crc_sent = 0;
+//	while (file_error_cnt != MAX_FAILS && times_crc_sent != MAX_FAILS) {
+//		// Get the file's content, save the encrypted content and save the sizes of both.
+//		std::string content = fileToString(client.getFilePath());
+//		std::string encrypted_content = aesKeyWrapper.encrypt(content.c_str(), content.length());
+//		uint32_t content_size = encrypted_content.length();
+//		uint32_t orig_size = content.length();
+//
+//		// Save the total packets and send the Sending File request to the server.
+//		uint16_t total_packs = TOTAL_PACKETS(content_size);
+//		SendingFile sendingFile(client.getUuid(), Codes::SENDING_FILE_C, PayloadSize::SENDING_FILE_P, content_size, orig_size, total_packs, client.getFilePath().c_str(), encrypted_content);
+//		operation_success = sendingFile.run(sock);
+//		// If the sending file request did not succeed, add 1 to sending file error counter and continue the loop.
+//		if (!operation_success) {
+//			file_error_cnt++;
+//			continue;
+//		}
+//
+//		// Get the cksum the server responded with.
+//		std::string response_cksum = sendingFile.getCksum();
+//		if (response_cksum == readfile(EXE_DIR_FILE_PATH(client.getFilePath()))) {
+//			break;
+//		}
+//
+//		// If the crc given by the server is incorrect, send Sending Crc Again request - 901.
+//		SendingCrcAgain sendingCrcAgain(client.getUuid(), Codes::SENDING_CRC_AGAIN_C, PayloadSize::SENDING_CRC_AGAIN_P, client.getFilePath().c_str());
+//
+//		// If the sending crc request did not succeed, add 1 to times crc sent counter.
+//		times_crc_sent++;
+//	}
+//	if (file_error_cnt == MAX_FAILS) {
+//		FATAL_MESSAGE_RETURN("Sending File");
+//	}
+//	else if (times_crc_sent == MAX_FAILS) {
+//		InvalidCrcDone invalid_crc_done(client.getUuid(), Codes::INVALID_CRC_DONE_C, PayloadSize::INVALID_CRC_DONE_P, client.getFilePath().c_str());
+//		invalid_crc_done.run(sock);
+//	}
+//	else {
+//		ValidCrc valid_crc(client.getUuid(), Codes::VALID_CRC_C, PayloadSize::VALID_CRC_P, client.getFilePath().c_str());
+//	}
+//}
 
-	// If me.info does not exist, send Registration request.
-	if (!filesystem::exists(EXE_DIR_FILE_PATH("me.info"))) {
-
-		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
-		RegistrationPayload registration_payload(client.getName().c_str());
-		RegisterRequest register_request(request_header, registration_payload)
-		operation_success = register_request.run(sock);
-
-		if (!operation_success) {
-			FATAL_MESSAGE_RETURN("Registration");
-		}
-
-		// Create RSA pair, save fields data into me.info and prev.key files, and send a SendingPublicKey request.
-		RSAPrivateWrapper privateKeyWrapper;
-
-		string public_key = privateKeyWrapper.getPublicKey();
-		private_key = privateKeyWrapper.getPrivateKey();
-
-		// saving files as required for future (reconnection etc)
-		save_me_info(client.getName(), client.getUuid(), private_key);
-		save_priv_key_file(private_key);
-
-		SendingPublicKey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_C, PayloadSize::SENDING_PUBLIC_KEY_P, client.getName().c_str(), public_key.c_str());
-		operation_success = sending_pub_key.run(sock);
-
-		if (!operation_success) {
-			FATAL_MESSAGE_RETURN("Sending Public Key");
-		}
-
-		// Get the encrypted AES key and decrypt it.
-		string encrypted_aes_key = sending_pub_key.getEncryptedAesKey();
-		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
-	}
-	else { // If me.info does exist, read id and send reconnection request.
-		// Read the fields from the client.
-		string key_base64 = read_from_files(client);
-
-		// Send Reconnection request to the server.
-		Reconnection reconnection(client.getUuid(), Codes::RECONNECTION_C, PayloadSize::RECONNECTION_P, client.getName().c_str());
-		operation_success = reconnection.run(sock);
-
-		if (!operation_success) {
-			FATAL_MESSAGE_RETURN("Reconnection");
-		}
-
-		// Decode the private key and create the decryptor.
-		private_key = Base64Wrapper::decode(key_base64);
-		RSAPrivateWrapper privateKeyWrapper(private_key);
-
-		// Get the encrypted AES key and decrypt it.
-		string encrypted_aes_key = reconnection.getEncryptedAesKey();
-		decrypted_aes_key = privateKeyWrapper.decrypt(encrypted_aes_key);
-	}
-	AESWrapper aesKeyWrapper(reinterpret_cast<const unsigned char*>(decrypted_aes_key.c_str()), decrypted_aes_key.size());
-	int file_error_cnt = 0, times_crc_sent = 0;
-	while (file_error_cnt != MAX_FAILS && times_crc_sent != MAX_FAILS) {
-		// Get the file's content, save the encrypted content and save the sizes of both.
-		std::string content = fileToString(client.getFilePath());
-		std::string encrypted_content = aesKeyWrapper.encrypt(content.c_str(), content.length());
-		uint32_t content_size = encrypted_content.length();
-		uint32_t orig_size = content.length();
-
-		// Save the total packets and send the Sending File request to the server.
-		uint16_t total_packs = TOTAL_PACKETS(content_size);
-		SendingFile sendingFile(client.getUuid(), Codes::SENDING_FILE_C, PayloadSize::SENDING_FILE_P, content_size, orig_size, total_packs, client.getFilePath().c_str(), encrypted_content);
-		operation_success = sendingFile.run(sock);
-		// If the sending file request did not succeed, add 1 to sending file error counter and continue the loop.
-		if (!operation_success) {
-			file_error_cnt++;
-			continue;
-		}
-
-		// Get the cksum the server responded with.
-		std::string response_cksum = sendingFile.getCksum();
-		if (response_cksum == readfile(EXE_DIR_FILE_PATH(client.getFilePath()))) {
-			break;
-		}
-
-		// If the crc given by the server is incorrect, send Sending Crc Again request - 901.
-		SendingCrcAgain sendingCrcAgain(client.getUuid(), Codes::SENDING_CRC_AGAIN_C, PayloadSize::SENDING_CRC_AGAIN_P, client.getFilePath().c_str());
-
-		// If the sending crc request did not succeed, add 1 to times crc sent counter.
-		times_crc_sent++;
-	}
-	if (file_error_cnt == MAX_FAILS) {
-		FATAL_MESSAGE_RETURN("Sending File");
-	}
-	else if (times_crc_sent == MAX_FAILS) {
-		InvalidCrcDone invalid_crc_done(client.getUuid(), Codes::INVALID_CRC_DONE_C, PayloadSize::INVALID_CRC_DONE_P, client.getFilePath().c_str());
-		invalid_crc_done.run(sock);
-	}
-	else {
-		ValidCrc valid_crc(client.getUuid(), Codes::VALID_CRC_C, PayloadSize::VALID_CRC_P, client.getFilePath().c_str());
-	}
+int main()
+{
+	std::cout << "Hello World!\n";
 }
 
-//int main()
-//{
-//	std::cout << "Hello World!\n";
-//}
-//
