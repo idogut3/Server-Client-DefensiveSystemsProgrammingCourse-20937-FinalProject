@@ -14,15 +14,15 @@ const RegistrationPayload* RegisterRequest::getPayload() const {
 	This method packs the header and payload for the registration request in a form of uint8_t vector.
 	All numeric fields are ordered by little endian order.
 */
-//Bytes RegisterRequest::pack_request() const {
-//	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
-//	Bytes packed_payload = this->getPayload().pack_payload();
-//	// Bytes request = ; 
-//	// Bytes packed_payload = zip.pack_payload();
-//	// add packed header and packed payload together and return them
-//
-//	return request;
-//}
+Bytes RegisterRequest::pack_request() const {
+	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	// Bytes request = ; 
+	// Bytes packed_payload = zip.pack_payload();
+	// add packed header and packed payload together and return them
+
+	return request;
+}
 
 
 
