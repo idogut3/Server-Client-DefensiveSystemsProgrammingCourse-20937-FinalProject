@@ -11,7 +11,7 @@ protected:
 
 public:
 	RegisterRequest(RequestHeader header, RegistrationPayload payload);
-	RegistrationPayload getPayload() const;
+	const RegistrationPayload* getPayload() const override;
 
 	Bytes pack_request() const;
 	bool run(tcp::socket& sock);
@@ -24,7 +24,7 @@ private:
 
 public:
 	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload);
-	SendPublicKeyPayload getPayload() const override;
+	const SendPublicKeyPayload* getPayload() const override;
 
 	Bytes pack_request();
 	bool run(tcp::socket& sock);
@@ -38,7 +38,7 @@ private:
 
 public:
 	ReconnectRequest(RequestHeader header, ReconnectionPayload payload);
-	ReconnectionPayload getPayload() const;
+	const ReconnectionPayload* getPayload() const override;
 
 	bool run(tcp::socket& sock);
 };
@@ -51,7 +51,7 @@ private:
 
 public:
 	ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
-	ValidCrcPayload getPayload() const;
+	const ValidCrcPayload* getPayload() const override;
 
 	bool run(tcp::socket& sock);
 };
@@ -64,7 +64,7 @@ private:
 
 public:
 	InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
-	InvalidCrcPayload getPayload() const;
+	const InvalidCrcPayload* getPayload() const override;
 
 	bool run(tcp::socket& sock);
 };
@@ -77,7 +77,7 @@ private:
 
 public:
 	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
-	InvalidCrcDonePayload getPayload() const;
+	const InvalidCrcDonePayload* getPayload() const override;
 
 	bool run(tcp::socket& sock);
 };
@@ -90,7 +90,7 @@ private:
 
 public:
 	SendFileRequest(RequestHeader header, SendFilePayload payload);
-	SendFilePayload getPayload() const;
+	const SendFilePayload* getPayload() const override;
 
 	bool run(tcp::socket& sock);
 };

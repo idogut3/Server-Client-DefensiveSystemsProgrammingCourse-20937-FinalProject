@@ -35,7 +35,9 @@ public:
 	Request(RequestHeader header);
 
 	RequestHeader getHeader() const;
-	virtual Payload getPayload() const = 0;
+
+	// Pure virtual function that returns a pointer to Payload to avoid object slicing
+	virtual const Payload* getPayload() const = 0;
 
 	// Pure Virtual function, each request derived class will implement this function.
 	virtual Bytes pack_request() const = 0;
