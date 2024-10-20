@@ -123,7 +123,7 @@ Bytes ValidCrcPayload::pack_payload() const {
 	// Get the actual length of the file name string (up to VALID_CRC_PAYLOAD_SIZE)
 	size_t file_name_length = std::strlen(this->file_name);
 
-	// Copy the username into the vector
+	// Copy the file_name into the vector
 	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(VALID_CRC_PAYLOAD_SIZE)));
 
 	return packed_payload;
@@ -145,9 +145,13 @@ const char* InvalidCrcPayload::getFileName() const {
 }
 
 Bytes InvalidCrcPayload::pack_payload() const {
-	Bytes packed_payload();
+	Bytes packed_payload(INVALID_CRC_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
 
-	// TODO:: Add implementation
+	// Get the actual length of the file name string (up to INVALID_CRC_PAYLOAD_SIZE)
+	size_t file_name_length = std::strlen(this->file_name);
+
+	// Copy the file_name into the vector
+	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(INVALID_CRC_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
@@ -163,9 +167,13 @@ const char* InvalidCrcDonePayload::getFileName() const {
 }
 
 Bytes InvalidCrcDonePayload::pack_payload() const {
-	Bytes packed_payload();
+	Bytes packed_payload(INVALID_CRC_DONE_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
 
-	// TODO:: Add implementation
+	// Get the actual length of the file name string (up to INVALID_CRC_DONE_PAYLOAD_SIZE)
+	size_t file_name_length = std::strlen(this->file_name);
+
+	// Copy the file_name into the vector
+	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(INVALID_CRC_DONE_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
