@@ -28,7 +28,7 @@ bool RegisterRequest::run(tcp::socket& sock) {
 	int times_sent = 1;
 	Bytes request = this->pack_request();
 
-	while (times_sent <= MAX_FAILS) {
+	while (times_sent <= MAX_REQUEST_FAILS) {
 		try {
 			// Send the request to the server via the provided socket.
 			boost::asio::write(sock, boost::asio::buffer(request));
@@ -59,8 +59,8 @@ bool RegisterRequest::run(tcp::socket& sock) {
 		times_sent++; // Meaning we failed registering 1 time because we catched an exception 
 	}
 
-	// If the times_sent reached MAX_FAILS, returning false
-	if (times_sent == MAX_FAILS) {
+	// If the times_sent reached MAX_REQUEST_FAILS, returning false
+	if (times_sent == MAX_REQUEST_FAILS) {
 		return false;
 	}
 	// If the the registration succeeded, return true.
@@ -81,6 +81,60 @@ Bytes SendPublicKeyRequest::pack_request() {
 	Bytes request = packed_header + packed_payload;
 	return request;
 }
+
+
+// TODO::::::::
+bool SendPublicKeyRequest::run(tcp::socket& sock) { 
+	// Pack request fields into vector and initialize parameter times_sent to 0.
+	int times_sent = 1;
+	Bytes request = pack_request();
+
+	while (times_sent <= MAX_REQUEST_FAILS) {
+		try {
+			// Send the request to the server via the provided socket.
+			boost::asio::write(sock, boost::asio::buffer(request));
+
+			// Receive header from the server, get response code and payload_size
+			Bytes response_header(RESPONSE_HEADER_SIZE);
+			boost::asio::read(sock, boost::asio::buffer(response_header, RESPONSE_HEADER_SIZE));
+			uint16_t response_code = extractCodeFromResponseHeader(response_header);
+			uint32_t response_payload_size = extractPayloadSizeFromResponseHeader(response_header);
+
+			// Receive payload from the server, save it's length in parameter length.
+			Bytes response_payload(response_payload_size);
+			size_t length = boost::asio::read(sock, boost::asio::buffer(response_payload, response_payload_size));
+
+			// If the code is not success, the payload_size for the code is not the same as the size received in the header, or the length of the payload is not the wanted length, print error.
+			if (response_code != Codes::PUBLIC_KEY_RECEIVED_CODE || length != response_payload_size) {
+				throw std::invalid_argument("server responded with an error");
+			}
+
+			// Copy the id from the payload, and check if it's the correct client id.
+			Bytes payload_id(sizeof(uuid));
+			std::copy(response_payload.begin(), response_payload.begin() + sizeof(uuid), payload_id.begin());
+			if (!id_vectors_match(payload_id, uuid)) {
+				throw std::invalid_argument("server responded with an error.");
+			}
+
+			// Copy the encrypted aes key content from the response_payload vector into the parameter encrypted_aes_key, then break from the loop.
+			std::copy(response_payload.begin() + sizeof(uuid), response_payload.end(), this->encrypted_aes_key);
+			break;
+		}
+		catch (std::exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		// Increment the i by 1 each iteration.
+		times_sent++;
+	}
+
+	// If the i reached 3, return FAILURE.
+	if (times_sent == MAX_REQUEST_FAILS) {
+		return FAILURE;
+	}
+	// If the client succeeded, return SUCCESS.
+	return SUCCESS;
+}
+
 
 
 ReconnectRequest::ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
