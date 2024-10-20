@@ -24,7 +24,7 @@ Bytes RegistrationPayload::pack_payload() const
 	return packed_payload;
 }
 	
-}
+
 
 
 
