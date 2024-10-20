@@ -25,6 +25,7 @@ public:
 class Payload {
 public:
 	virtual Bytes pack_payload() const = 0;
+	virtual ~Payload() = default; // Virtual destructor
 };
 
 class Request {

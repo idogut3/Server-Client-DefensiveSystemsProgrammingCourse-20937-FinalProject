@@ -2,7 +2,7 @@
 #define REQUEST_PAYLOADS_HPP
 #include "request.hpp"
 
-class RegistrationPayload : Payload {
+class RegistrationPayload : public Payload {
 protected:
 	char username[255];
 public:
@@ -14,7 +14,7 @@ public:
 };
 
 
-class SendPublicKeyPayload : Payload {
+class SendPublicKeyPayload : public Payload {
 protected:
     char username[255];
     char public_key[160];
@@ -31,7 +31,7 @@ public:
 
 
 
-class ReconnectionPayload : Payload {
+class ReconnectionPayload : public Payload {
 private:
     char username[255];
 
@@ -45,7 +45,7 @@ public:
 
 
 
-class ValidCrcPayload : Payload {
+class ValidCrcPayload : public Payload {
 protected:
     char file_name[255];
 
@@ -60,7 +60,7 @@ public:
 
 
 
-class InvalidCrcPayload : Payload {
+class InvalidCrcPayload : public Payload {
 protected:
     char file_name[255];
 
@@ -73,7 +73,7 @@ public:
 
 
 
-class InvalidCrcDonePayload : Payload {
+class InvalidCrcDonePayload : public Payload {
 protected:
     char file_name[255];
 
@@ -86,7 +86,7 @@ public:
 
 
 
-class SendFilePayload : Payload {
+class SendFilePayload : public Payload {
 protected:
     uint32_t content_size; // 4 bytes = 32 bits
     uint32_t orig_file_size; // 4 bytes = 32 bits
