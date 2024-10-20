@@ -88,10 +88,16 @@ ReconnectionPayload::ReconnectionPayload(const char* username) {
 const char* ReconnectionPayload::getUsername() const {
 	return username;
 }
-Bytes ReconnectionPayload::pack_payload() const {
-	Bytes packed_payload();
 
-	// TODO:: Add implementation
+
+Bytes ReconnectionPayload::pack_payload() const {
+	Bytes packed_payload(RECONNECTION_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
+
+	// Get the actual length of the username string (up to 255)
+	size_t username_length = std::strlen(this->username);
+
+	// Copy the username into the vector
+	std::memcpy(packed_payload.data(), this->username, std::min(username_length, size_t(RECONNECTION_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
