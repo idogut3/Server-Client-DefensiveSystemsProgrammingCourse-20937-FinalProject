@@ -15,12 +15,9 @@ const RegistrationPayload* RegisterRequest::getPayload() const {
 	All numeric fields are ordered by little endian order.
 */
 Bytes RegisterRequest::pack_request() const {
-	Bytes packed_header = this->getHeader().pack_header(); // pack_header();
+	Bytes packed_header = this->getHeader().pack_header(); 
 	Bytes packed_payload = this->getPayload()->pack_payload();
-	// Bytes request = ; 
-	// Bytes packed_payload = zip.pack_payload();
-	// add packed header and packed payload together and return them
-
+	Bytes request = packed_header + packed_payload;
 	return request;
 }
 
