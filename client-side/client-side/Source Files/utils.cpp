@@ -1,5 +1,13 @@
 #include "client-side\Header Files\utils.hpp"
 
+Bytes operator+(const Bytes& first, const Bytes& second) {
+	Bytes result;
+	result.reserve(first.size() + second.size());
+	result.insert(result.end(), first.begin(), first.end());  // Insert first at the end
+	result.insert(result.end(), second.begin(), second.end());  // Append second at the end
+	return result;
+}
+
 UUID getUUIDFromString(string client_id)
 {
 	UUIDGenerator uuid_generator;  // Use the alias for boost::uuids::string_generator

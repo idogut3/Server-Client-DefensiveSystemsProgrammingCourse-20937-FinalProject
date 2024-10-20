@@ -66,7 +66,7 @@ const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change lat
 
 
 
-
+Bytes operator+(const Bytes &first, const Bytes &second);
 UUID getUUIDFromString(string client_id);
 bool is_integer(const std::string& num);
 uint16_t extractCodeFromResponseHeader(const Bytes&header);

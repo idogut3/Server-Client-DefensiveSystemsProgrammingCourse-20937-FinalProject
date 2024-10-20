@@ -16,10 +16,10 @@ Bytes RegistrationPayload::pack_payload() const
 	Bytes packed_payload(REGISTRATION_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
 
 	// Get the actual length of the username string (up to 255)
-	size_t username_len = std::strlen(this->username);
+	size_t username_lenght = std::strlen(this->username);
 
 	// Copy the username into the vector
-	std::memcpy(packed_payload.data(), this->username, std::min(username_len, size_t(REGISTRATION_PAYLOAD_SIZE)));
+	std::memcpy(packed_payload.data(), this->username, std::min(username_lenght, size_t(REGISTRATION_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
