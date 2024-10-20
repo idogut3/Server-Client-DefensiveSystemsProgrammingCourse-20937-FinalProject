@@ -1,5 +1,6 @@
 #ifndef REQUEST_PAYLOADS_HPP
 #define REQUEST_PAYLOADS_HPP
+#include "request.hpp"
 
 class RegistrationPayload : Payload {
 protected:
@@ -25,7 +26,7 @@ public:
     const char* getUsername() const;
     const char* getPublicKey() const;
 
-    Bytes pack_payload() const;
+    Bytes pack_payload() const override;
 };
 
 
@@ -39,7 +40,7 @@ public:
 
     const char* getUsername() const;
 
-    Bytes pack_payload() const;
+    Bytes pack_payload() const override;
 };
 
 
@@ -53,7 +54,7 @@ public:
 
     const char* getFileName() const;
 
-    Bytes pack_payload() const;
+    Bytes pack_payload() const override;
 };
 
 
@@ -66,6 +67,8 @@ protected:
 public:
     InvalidCrcPayload(const char* file_name);
     const char* getFileName() const;
+
+    Bytes pack_payload() const override;
 };
 
 
@@ -77,11 +80,13 @@ protected:
 public:
     InvalidCrcDonePayload(const char* file_name);
     const char* getFileName() const;
+
+    Bytes pack_payload() const;
 };
 
 
 
-class SendFilePayload {
+class SendFilePayload : Payload {
 protected:
     uint32_t content_size; // 4 bytes = 32 bits
     uint32_t orig_file_size; // 4 bytes = 32 bits
@@ -91,6 +96,7 @@ protected:
     //TODO: message conntent how to save it idkkkkkAAAA 
 public:
     SendFilePayload(uint32_t content_size, uint32_t orig_file_size, uint16_t packet_number, uint16_t total_packets, char file_name[]);
+    Bytes pack_payload() const override;
 };
 
 

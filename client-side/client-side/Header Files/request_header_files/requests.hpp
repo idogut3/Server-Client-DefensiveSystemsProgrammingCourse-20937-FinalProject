@@ -2,6 +2,7 @@
 #define REQUESTS_HPP
 
 #include "request.hpp"
+#include "requests.hpp"
 #include "requests_payloads.hpp"
 
 

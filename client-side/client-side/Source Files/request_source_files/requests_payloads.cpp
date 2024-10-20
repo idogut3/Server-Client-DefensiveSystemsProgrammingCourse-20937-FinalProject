@@ -16,10 +16,10 @@ Bytes RegistrationPayload::pack_payload() const
 	Bytes packed_payload(REGISTRATION_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
 
 	// Get the actual length of the username string (up to 255)
-	size_t username_lenght = std::strlen(this->username);
+	size_t username_length = std::strlen(this->username);
 
 	// Copy the username into the vector
-	std::memcpy(packed_payload.data(), this->username, std::min(username_lenght, size_t(REGISTRATION_PAYLOAD_SIZE)));
+	std::memcpy(packed_payload.data(), this->username, std::min(username_length, size_t(REGISTRATION_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
@@ -54,9 +54,21 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 }
 
 Bytes SendPublicKeyPayload::pack_payload() const {
-	Bytes packed_payload();
+	
+	constexpr size_t NUM_OF_BYTES_OF_USERNAME = 255;
+	constexpr size_t NUM_OF_BYTES_OF_PUBLIC_KEY = 160;
 
-	// TODO:: Add implementation
+	// Initialize the packed payload with zeroes and in the correct size
+	Bytes packed_payload(NUM_OF_BYTES_OF_USERNAME + NUM_OF_BYTES_OF_PUBLIC_KEY, 0);
+
+	// Get the actual length of the username string
+	size_t name_length = std::strlen(this->username);
+
+	// Copy the username into the vector, limiting to the maximum size
+	std::memcpy(packed_payload.data(), this->username, std::min(name_length, NUM_OF_BYTES_OF_USERNAME));
+
+	// Copy the public key into the vector (160 bytes)
+	std::memcpy(packed_payload.data() + NUM_OF_BYTES_OF_USERNAME, this->public_key, NUM_OF_BYTES_OF_PUBLIC_KEY);
 
 	return packed_payload;
 }
