@@ -75,33 +75,12 @@ const SendPublicKeyPayload* SendPublicKeyRequest::getPayload() const {
 	return &payload;  // Returning a pointer to payload
 }
 
-//Bytes SendPublicKeyRequest::pack_request() { //TODO :NOT DONE
-//	Bytes request(REQUEST_HEADER_SIZE + this->getHeader()->getPayloadSize());
-//
-//	// Saving the numeric type in little endian order
-//	uint16_t code_in_little_endian = native_to_little(this->getHeader()->getCode());
-//	uint32_t payload_size_in_little_endian = native_to_little(this->payload_size);
-//
-//	// Saving the bytes in little endian order as a byte array.
-//	uint8_t* code_in_little_endian_ptr = reinterpret_cast<uint8_t*>(&code_in_little_endian);
-//	uint8_t* payload_size_in_little_endian_ptr = reinterpret_cast<uint8_t*>(&payload_size_in_little_endian);
-//
-//	// Adding fields to the vector
-//	size_t postion = 0;
-//
-//	std::copy(uuid.begin(), uuid.end(), request.begin()); // Copying the uuid to the beginning of request
-//	postion += sizeof(uuid); // Move the position forward by the size of UUID
-//
-//	request[postion] = version; // after the uuid we insert the version
-//	postion += sizeof(version); // Move the position forward by the size of version
-//
-//	std::copy(code_in_little_endian_ptr, code_in_little_endian_ptr + sizeof(code_in_little_endian), request.begin() + postion);
-//	postion += sizeof(code); // Move the position forward by the size of code
-//
-//	std::copy(payload_size_in_little_endian_ptr, payload_size_in_little_endian_ptr + sizeof(payload_size_in_little_endian), request.begin() + postion);
-//
-//	return request;
-//}
+Bytes SendPublicKeyRequest::pack_request() {
+	Bytes packed_header = this->getHeader().pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	Bytes request = packed_header + packed_payload;
+	return request;
+}
 
 
 ReconnectRequest::ReconnectRequest(RequestHeader header, ReconnectionPayload payload)
