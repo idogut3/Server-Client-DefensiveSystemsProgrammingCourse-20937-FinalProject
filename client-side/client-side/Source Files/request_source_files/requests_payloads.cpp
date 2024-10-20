@@ -118,9 +118,13 @@ const char* ValidCrcPayload::getFileName() const {
 }
 
 Bytes ValidCrcPayload::pack_payload() const {
-	Bytes packed_payload();
+	Bytes packed_payload(VALID_CRC_PAYLOAD_SIZE, 0); // Initialize with zeroes the packed_payload
 
-	// TODO:: Add implementation
+	// Get the actual length of the file name string (up to VALID_CRC_PAYLOAD_SIZE)
+	size_t file_name_length = std::strlen(this->file_name);
+
+	// Copy the username into the vector
+	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(VALID_CRC_PAYLOAD_SIZE)));
 
 	return packed_payload;
 }
