@@ -191,6 +191,31 @@ SendFilePayload::SendFilePayload(uint32_t content_size, uint32_t orig_file_size,
 	}
 }
 
+
+uint32_t SendFilePayload::get_content_size() const {
+	return content_size;
+}
+
+uint32_t SendFilePayload::get_orig_file_size() const {
+	return orig_file_size;
+}
+
+uint16_t SendFilePayload::get_packet_number() const {
+	return packet_number;
+}
+
+uint16_t SendFilePayload::get_total_packets() const {
+	return total_packets;
+}
+
+const char* SendFilePayload::get_file_name() const {
+	return file_name;
+}
+
+const string& SendFilePayload::get_encrypted_file_content() const {
+	return encrypted_file_content;
+}
+
 Bytes SendFilePayload::pack_payload() const {
 	Bytes packed_payload();
 
