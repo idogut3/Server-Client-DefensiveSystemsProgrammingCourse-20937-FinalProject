@@ -27,7 +27,7 @@ public:
     const char* getUsername() const;
     const char* getPublicKey() const;
 
-    void setEncryptedAESKey(const char* encrypted_aes_key, size_t key_length);
+    void setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length);
 
     Bytes pack_payload() const override;
 };
@@ -37,11 +37,15 @@ public:
 class ReconnectionPayload : public Payload {
 private:
     char username[MAX_USERNAME_LENGTH];
+    char encrypted_aes_key[ENCRYPTED_AES_KEY_LENGTH];
 
 public:
     ReconnectionPayload(const char* username);
 
     const char* getUsername() const;
+    const string getEncryptedAESKey() const;
+
+    void setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length);
 
     Bytes pack_payload() const override;
 };

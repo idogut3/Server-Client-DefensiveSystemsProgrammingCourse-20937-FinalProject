@@ -57,6 +57,12 @@ constexpr auto CONTENT_SIZE_PER_PACKET = 1024;
 constexpr auto MAX_REQUEST_FAILS = 3;
 constexpr size_t UUID_SIZE = 16;
 
+
+constexpr int SUCCESS = 0;
+constexpr int FAILURE = 1;
+constexpr int SPECIAL = 2;
+
+
 const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change later cuz folders
 #define EXE_DIR_FILE_PATH(file_name) (EXE_DIR + "\\" + file_name)
 #define FATAL_MESSAGE_RETURN(type) \

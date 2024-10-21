@@ -25,6 +25,10 @@ void RequestHeader::setUUIDFromRawBytes(const Bytes& uuid_bytes) {
 RequestHeader Request::getHeader() const {
 	return this->header;
 }
+RequestHeader& Request::getHeaderReference() {
+	return this->header;
+}
+
 
 Bytes RequestHeader::pack_header() const {
 	Bytes packed_header(REQUEST_HEADER_SIZE);

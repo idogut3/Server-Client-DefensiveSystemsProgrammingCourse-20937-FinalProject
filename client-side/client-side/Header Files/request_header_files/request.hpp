@@ -36,6 +36,7 @@ public:
 	Request(RequestHeader header);
 
 	RequestHeader getHeader() const;
+	RequestHeader& getHeaderReference();
 
 	// Pure virtual function that returns a pointer to Payload to avoid object slicing
 	virtual const Payload* getPayload() const = 0;

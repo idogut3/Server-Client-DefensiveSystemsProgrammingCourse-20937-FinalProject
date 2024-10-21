@@ -53,7 +53,7 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 	return public_key;
 }
 
-void SendPublicKeyPayload::setEncryptedAESKey(const char* encrypted_aes_key, size_t key_length) {
+void SendPublicKeyPayload::setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length) {
 	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
 		std::memcpy(this->encrypted_aes_key, encrypted_aes_key, key_length);
 	}
@@ -94,9 +94,22 @@ ReconnectionPayload::ReconnectionPayload(const char* username) {
 		this->username[0] = '\0'; // Ensure username is empty on error
 	}
 }
+const string ReconnectionPayload::getEncryptedAESKey() const {
+	return this->encrypted_aes_key;
+}
+
 
 const char* ReconnectionPayload::getUsername() const {
 	return username;
+}
+
+void ReconnectionPayload::setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length) {
+	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
+		std::memcpy(this->encrypted_aes_key, encrypted_aes_key, key_length);
+	}
+	else {
+		throw std::length_error("Key length exceeds ENCRYPTED_AES_KEY_LENGTH");
+	}
 }
 
 

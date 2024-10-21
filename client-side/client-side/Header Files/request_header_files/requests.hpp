@@ -27,9 +27,9 @@ public:
 	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload);
 	const SendPublicKeyPayload* getPayload() const override;
 
-	void SendPublicKeyRequest::updateEncryptedAESKey(const Bytes& encrypted_aes_key);
+	void updateEncryptedAESKey(const Bytes& encrypted_aes_key);
 
-	Bytes pack_request();
+	Bytes pack_request() const;
 	bool run(tcp::socket& sock);
 };
 
@@ -42,7 +42,9 @@ private:
 public:
 	ReconnectRequest(RequestHeader header, ReconnectionPayload payload);
 	const ReconnectionPayload* getPayload() const override;
+	void updateEncryptedAESKey(const Bytes& encrypted_aes_key);
 
+	Bytes pack_request() const;
 	bool run(tcp::socket& sock);
 };
 
