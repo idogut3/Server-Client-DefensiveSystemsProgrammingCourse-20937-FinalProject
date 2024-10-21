@@ -27,6 +27,8 @@ public:
 	SendPublicKeyRequest(RequestHeader header, SendPublicKeyPayload payload);
 	const SendPublicKeyPayload* getPayload() const override;
 
+	void SendPublicKeyRequest::updateEncryptedAESKey(const Bytes& encrypted_aes_key);
+
 	Bytes pack_request();
 	bool run(tcp::socket& sock);
 };

@@ -57,3 +57,13 @@ uint32_t extractPayloadSizeFromResponseHeader(const Bytes& header) {
 	uint32_t native_payload_size = little_to_native(combined);
 	return native_payload_size;
 }
+
+
+bool are_uuids_equal(const Bytes first, const UUID second) {
+	for (int i = 0; i < first.size(); i++) {
+		if (first[i] != second.data[i]){
+			return false;
+		}
+	}
+	return true;
+}

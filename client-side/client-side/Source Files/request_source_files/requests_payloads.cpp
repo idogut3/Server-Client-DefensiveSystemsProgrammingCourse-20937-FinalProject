@@ -53,6 +53,16 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 	return public_key;
 }
 
+void SendPublicKeyPayload::setEncryptedAESKey(const char* encrypted_aes_key, size_t key_length) {
+	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
+		std::memcpy(this->encrypted_aes_key, encrypted_aes_key, key_length);
+	}
+	else {
+		throw std::length_error("Key length exceeds ENCRYPTED_AES_KEY_LENGTH");
+	}
+}
+
+
 Bytes SendPublicKeyPayload::pack_payload() const {
 	
 	constexpr size_t NUM_OF_BYTES_OF_USERNAME = 255;

@@ -60,7 +60,7 @@ bool RegisterRequest::run(tcp::socket& sock) {
 	}
 
 	// If the times_sent reached MAX_REQUEST_FAILS, returning false
-	if (times_sent == MAX_REQUEST_FAILS) {
+	if (times_sent >= MAX_REQUEST_FAILS) {
 		return false;
 	}
 	// If the the registration succeeded, return true.
@@ -74,6 +74,11 @@ SendPublicKeyRequest::SendPublicKeyRequest(RequestHeader header, SendPublicKeyPa
 const SendPublicKeyPayload* SendPublicKeyRequest::getPayload() const {
 	return &payload;  // Returning a pointer to payload
 }
+
+void SendPublicKeyRequest::updateEncryptedAESKey(const Bytes& encrypted_aes_key) {
+	this->payload.setEncryptedAESKey(reinterpret_cast<const char*>(encrypted_aes_key.data()), encrypted_aes_key.size());
+}
+
 
 Bytes SendPublicKeyRequest::pack_request() {
 	Bytes packed_header = this->getHeader().pack_header();
@@ -110,15 +115,16 @@ bool SendPublicKeyRequest::run(tcp::socket& sock) {
 			}
 
 			// Copy the id from the payload, and check if it's the correct client id.
-			Bytes payload_id(sizeof(uuid));
-			std::copy(response_payload.begin(), response_payload.begin() + sizeof(uuid), payload_id.begin());
-			if (!id_vectors_match(payload_id, uuid)) {
+			Bytes payload_uuid(sizeof(UUID_SIZE));
+			std::copy(response_payload.begin(), response_payload.begin() + sizeof(UUID_SIZE), payload_uuid.begin());
+
+			if (!are_uuids_equal(payload_uuid, this->getHeader().getUUID())) {
 				throw std::invalid_argument("server responded with an error.");
 			}
 
-			// Copy the encrypted aes key content from the response_payload vector into the parameter encrypted_aes_key, then break from the loop.
-			std::copy(response_payload.begin() + sizeof(uuid), response_payload.end(), this->encrypted_aes_key);
-			break;
+			updateEncryptedAESKey(response_payload);
+
+			break; // Existing the loop SendPublicKeyRequest::run was successful
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;
@@ -126,13 +132,12 @@ bool SendPublicKeyRequest::run(tcp::socket& sock) {
 		// Increment the i by 1 each iteration.
 		times_sent++;
 	}
-
-	// If the i reached 3, return FAILURE.
-	if (times_sent == MAX_REQUEST_FAILS) {
-		return FAILURE;
+	// If the times_sent reached MAX_REQUEST_FAILS, returning false
+	if (times_sent >= MAX_REQUEST_FAILS) {
+		return false;
 	}
-	// If the client succeeded, return SUCCESS.
-	return SUCCESS;
+	// If the the SendPublicKeyRequest::run succeeded, return true.
+	return true;
 }
 
 
