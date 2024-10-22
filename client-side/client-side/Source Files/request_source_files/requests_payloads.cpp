@@ -203,7 +203,7 @@ Bytes InvalidCrcDonePayload::pack_payload() const {
 
 
 SendFilePayload::SendFilePayload(uint32_t content_size, uint32_t orig_file_size, uint16_t packet_number, uint16_t total_packets, char file_name[])
-	: content_size(content_size), orig_file_size(orig_file_size), packet_number(packet_number), total_packets(total_packets) {
+	: content_size(content_size), orig_file_size(orig_file_size), packet_number(packet_number), total_packets(total_packets), cksum(0) {
 	// Attempt to copy the file name
 	errno_t result = strcpy_s(this->file_name, sizeof(this->file_name), file_name);
 	if (result != 0) {
@@ -212,6 +212,14 @@ SendFilePayload::SendFilePayload(uint32_t content_size, uint32_t orig_file_size,
 	}
 }
 
+// Setting the cksum to the given unsigned long variable
+void SendFilePayload::setCksum(unsigned long cksum) {
+	this->cksum = cksum;
+}
+// Getting the cksum received by the server
+unsigned long SendFilePayload::getCksum() const {
+	return this->cksum;
+}
 
 uint32_t SendFilePayload::get_content_size() const {
 	return content_size;

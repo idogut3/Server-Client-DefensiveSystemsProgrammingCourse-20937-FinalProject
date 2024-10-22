@@ -86,7 +86,7 @@ public:
 	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
 	const InvalidCrcDonePayload* getPayload() const override;
 
-// 	Bytes pack_request() const;
+//	Bytes pack_request() const;
 	int run(tcp::socket& sock);
 };
 
@@ -99,8 +99,11 @@ private:
 public:
 	SendFileRequest(RequestHeader header, SendFilePayload payload);
 	const SendFilePayload* getPayload() const override;
+	SendFilePayload& getPayloadReference();
 
 	Bytes pack_request() const;
+	void sendFileData(tcp::socket& sock);
+
 	int run(tcp::socket& sock);
 };
 

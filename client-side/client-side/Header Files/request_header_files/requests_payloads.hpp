@@ -101,6 +101,7 @@ protected:
     uint16_t total_packets; // 2 bytes = 16 bits
     char file_name[MAX_USERNAME_LENGTH];
     string encrypted_file_content; 
+    unsigned long cksum;
 public:
     SendFilePayload(uint32_t content_size, uint32_t orig_file_size, uint16_t packet_number, uint16_t total_packets, char file_name[]);
     uint32_t get_content_size() const;
@@ -109,6 +110,8 @@ public:
     uint16_t get_total_packets() const;
     const char* get_file_name() const;
     const string& get_encrypted_file_content() const;
+    void setCksum(unsigned long cksum);
+    unsigned long getCksum() const;
 
     Bytes pack_payload() const override;
 };

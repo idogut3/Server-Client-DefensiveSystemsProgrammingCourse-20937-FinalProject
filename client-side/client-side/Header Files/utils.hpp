@@ -53,9 +53,11 @@ constexpr auto MAX_FILE_NAME_LENGTH = 255;
 constexpr auto REQUEST_HEADER_SIZE = 23;
 constexpr auto RESPONSE_HEADER_SIZE = 7;
 constexpr auto HEX_ID_LENGTH = 32;
-constexpr auto CONTENT_SIZE_PER_PACKET = 1024;
+constexpr size_t CONTENT_SIZE_PER_PACKET = 1024;
 constexpr auto MAX_REQUEST_FAILS = 3;
 constexpr size_t UUID_SIZE = 16;
+
+constexpr size_t SEND_FILE_REQUEST_HEADER_EXTRAS_SIZE = 267;
 
 
 constexpr int SUCCESS = 0;
@@ -79,6 +81,9 @@ UUID getUUIDFromString(string client_id);
 bool is_integer(const std::string& num);
 uint16_t extractCodeFromResponseHeader(const Bytes&header);
 uint32_t extractPayloadSizeFromResponseHeader(const Bytes&header);
+uint32_t extractPayloadContentSize(Bytes response_payload);
+string extractSendFileResponseFileName(Bytes response_payload);
+unsigned long extractSendFileResponseCksum(Bytes response_payload);
 
 // This method receives two uuids, one as a vector<uint8_s> (Bytes) and one as a boost::uuids::uuid type, and checks if they're identical.
 bool are_uuids_equal(const Bytes first, const UUID second);

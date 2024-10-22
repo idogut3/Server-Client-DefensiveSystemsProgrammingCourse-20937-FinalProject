@@ -58,6 +58,43 @@ uint32_t extractPayloadSizeFromResponseHeader(const Bytes& header) {
 	return native_payload_size;
 }
 
+uint32_t extractPayloadContentSize(Bytes response_payload) {
+	// Extract the 4 bytes starting from index 16 and convert to uint32_t
+	uint32_t content_size = (static_cast<uint32_t>(response_payload[16])) |
+		(static_cast<uint32_t>(response_payload[17]) << 8) |
+		(static_cast<uint32_t>(response_payload[18]) << 16) |
+		(static_cast<uint32_t>(response_payload[19]) << 24);
+	return content_size;
+}
+
+string extractSendFileResponseFileName(Bytes response_payload) {
+	// The file name starts at index 20 and can be up to MAX_FILE_NAME_LENGTH bytes long
+	size_t file_name_start = 20;
+	size_t file_name_length = std::min(static_cast<size_t>(MAX_FILE_NAME_LENGTH), response_payload.size() - file_name_start);
+
+	// Create a string from the response payload data starting at index 20
+	std::string file_name(reinterpret_cast<const char*>(response_payload.data() + file_name_start), file_name_length);
+
+	// Remove any null terminators from the end of the string
+	file_name.erase(std::find(file_name.begin(), file_name.end(), '\0'), file_name.end());
+
+	return file_name;
+}
+unsigned long extractSendFileResponseCksum(Bytes response_payload) {
+	size_t cksum_start = 275;
+
+	// The checksum is located at the end of the response payload (last 4 bytes)
+	unsigned long response_cksum =
+		static_cast<unsigned long>(response_payload[275]) << 24 | // 1st byte of checksum
+		static_cast<unsigned long>(response_payload[276]) << 16 | // 2nd byte of checksum
+		static_cast<unsigned long>(response_payload[277]) << 8 | // 3rd byte of checksum
+		static_cast<unsigned long>(response_payload[278]);        // 4th byte of checksum
+
+	return response_cksum;
+}
+
+
+
 
 bool are_uuids_equal(const Bytes first, const UUID second) {
 	for (int i = 0; i < first.size(); i++) {
