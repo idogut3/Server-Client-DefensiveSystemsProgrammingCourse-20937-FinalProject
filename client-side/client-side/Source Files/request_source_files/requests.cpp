@@ -22,7 +22,7 @@ Bytes RegisterRequest::pack_request() const {
 
 
 
-bool RegisterRequest::run(tcp::socket& sock) {
+int RegisterRequest::run(tcp::socket& sock) {
 	// Pack request fields into vector and initialize parameter times_sent to 0
 	int times_sent = 1;
 	Bytes request = this->pack_request();
@@ -60,10 +60,10 @@ bool RegisterRequest::run(tcp::socket& sock) {
 
 	// If the times_sent reached MAX_REQUEST_FAILS, returning false
 	if (times_sent >= MAX_REQUEST_FAILS) {
-		return false;
+		return FAILURE;
 	}
 	// If the the registration succeeded, return true
-	return true;
+	return SUCCESS;
 }
 
 
@@ -88,7 +88,7 @@ Bytes SendPublicKeyRequest::pack_request() const {
 
 
 // TODO::::::::
-bool SendPublicKeyRequest::run(tcp::socket& sock) { 
+int SendPublicKeyRequest::run(tcp::socket& sock) { 
 	// Pack request fields into vector and initialize parameter times_sent to 0
 	int times_sent = 1;
 	Bytes request = pack_request();
@@ -133,10 +133,10 @@ bool SendPublicKeyRequest::run(tcp::socket& sock) {
 	}
 	// If the times_sent reached MAX_REQUEST_FAILS, returning false
 	if (times_sent >= MAX_REQUEST_FAILS) {
-		return false;
+		return FAILURE;
 	}
 	// If the the SendPublicKeyRequest::run succeeded, return true
-	return true;
+	return SUCCESS;
 }
 
 
@@ -160,7 +160,7 @@ void ReconnectRequest::updateEncryptedAESKey(const Bytes& encrypted_aes_key) {
 	this->payload.setEncryptedAESKey(reinterpret_cast<const char*>(encrypted_aes_key.data()), encrypted_aes_key.size());
 }
 
-bool ReconnectRequest::run(tcp::socket& sock) {
+int ReconnectRequest::run(tcp::socket& sock) {
 	// Pack request fields into vector and initialize parameter times_sent to 1
 	int times_sent = 1;
 	Bytes request = pack_request();
@@ -210,10 +210,10 @@ bool ReconnectRequest::run(tcp::socket& sock) {
 	}
 	// If the times_sent reached MAX_REQUEST_FAILS, returning false
 	if (times_sent >= MAX_REQUEST_FAILS) {
-		return false;
+		return FAILURE;
 	}
 	// If the the SendPublicKeyRequest::run succeeded, return true
-	return true;
+	return SUCCESS;
 }
 
 

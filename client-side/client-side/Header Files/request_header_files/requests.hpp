@@ -15,7 +15,7 @@ public:
 	const RegistrationPayload* getPayload() const override;
 
 	Bytes pack_request() const;
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -30,7 +30,7 @@ public:
 	void updateEncryptedAESKey(const Bytes& encrypted_aes_key);
 
 	Bytes pack_request() const;
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -45,7 +45,7 @@ public:
 	void updateEncryptedAESKey(const Bytes& encrypted_aes_key);
 
 	Bytes pack_request() const;
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -58,7 +58,7 @@ public:
 	ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
 	const ValidCrcPayload* getPayload() const override;
 
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -71,7 +71,7 @@ public:
 	InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
 	const InvalidCrcPayload* getPayload() const override;
 
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -84,7 +84,7 @@ public:
 	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
 	const InvalidCrcDonePayload* getPayload() const override;
 
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 
@@ -97,7 +97,7 @@ public:
 	SendFileRequest(RequestHeader header, SendFilePayload payload);
 	const SendFilePayload* getPayload() const override;
 
-	bool run(tcp::socket& sock);
+	int run(tcp::socket& sock);
 };
 
 #endif

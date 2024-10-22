@@ -43,7 +43,7 @@ public:
 
 	// Pure Virtual function, each request derived class will implement this function.
 	virtual Bytes pack_request() const = 0;
-	virtual bool run(tcp::socket& sock) = 0;
+	virtual int run(tcp::socket& sock) = 0;
 };
 
 #endif 
