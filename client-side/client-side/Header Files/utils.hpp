@@ -83,5 +83,8 @@ uint32_t extractPayloadSizeFromResponseHeader(const Bytes&header);
 // This method receives two uuids, one as a vector<uint8_s> (Bytes) and one as a boost::uuids::uuid type, and checks if they're identical.
 bool are_uuids_equal(const Bytes first, const UUID second);
 
+uint32_t htole32(uint32_t x);
+uint16_t htole16(uint16_t x);
+
 
 #endif

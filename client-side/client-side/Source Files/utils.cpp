@@ -67,3 +67,16 @@ bool are_uuids_equal(const Bytes first, const UUID second) {
 	}
 	return true;
 }
+
+
+uint32_t htole32(uint32_t x) {
+	return ((x >> 24) & 0x000000FF) |
+		((x >> 8) & 0x0000FF00) |
+		((x << 8) & 0x00FF0000) |
+		((x << 24) & 0xFF000000);
+}
+
+uint16_t htole16(uint16_t x) {
+	return ((x >> 8) & 0x00FF) |
+		((x << 8) & 0xFF00);
+}

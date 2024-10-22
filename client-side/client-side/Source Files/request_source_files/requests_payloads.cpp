@@ -19,8 +19,7 @@ Bytes RegistrationPayload::pack_payload() const
 	size_t username_length = std::strlen(this->username);
 
 	// Copy the username into the vector
-	std::memcpy(packed_payload.data(), this->username, std::min(username_length, size_t(REGISTRATION_PAYLOAD_SIZE)));
-
+	std::copy(this->username, this->username + std::min(username_length, size_t(REGISTRATION_PAYLOAD_SIZE)), packed_payload.begin());
 	return packed_payload;
 }
 	
@@ -55,7 +54,7 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 
 void SendPublicKeyPayload::setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length) {
 	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
-		std::memcpy(this->encrypted_aes_key, encrypted_aes_key, key_length);
+		std::copy(encrypted_aes_key, encrypted_aes_key + key_length, this->encrypted_aes_key);
 	}
 	else {
 		throw std::length_error("Key length exceeds ENCRYPTED_AES_KEY_LENGTH");
@@ -75,10 +74,10 @@ Bytes SendPublicKeyPayload::pack_payload() const {
 	size_t name_length = std::strlen(this->username);
 
 	// Copy the username into the vector, limiting to the maximum size
-	std::memcpy(packed_payload.data(), this->username, std::min(name_length, NUM_OF_BYTES_OF_USERNAME));
+	std::copy(this->username, this->username + std::min(name_length, size_t(NUM_OF_BYTES_OF_USERNAME)), packed_payload.begin());
 
 	// Copy the public key into the vector (160 bytes)
-	std::memcpy(packed_payload.data() + NUM_OF_BYTES_OF_USERNAME, this->public_key, NUM_OF_BYTES_OF_PUBLIC_KEY);
+	std::copy(this->public_key, this->public_key + NUM_OF_BYTES_OF_PUBLIC_KEY, packed_payload.begin() + NUM_OF_BYTES_OF_USERNAME);
 
 	return packed_payload;
 }
@@ -105,7 +104,7 @@ const char* ReconnectionPayload::getUsername() const {
 
 void ReconnectionPayload::setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length) {
 	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
-		std::memcpy(this->encrypted_aes_key, encrypted_aes_key, key_length);
+		std::copy(encrypted_aes_key, encrypted_aes_key + key_length, this->encrypted_aes_key);
 	}
 	else {
 		throw std::length_error("Key length exceeds ENCRYPTED_AES_KEY_LENGTH");
@@ -120,7 +119,7 @@ Bytes ReconnectionPayload::pack_payload() const {
 	size_t username_length = std::strlen(this->username);
 
 	// Copy the username into the vector
-	std::memcpy(packed_payload.data(), this->username, std::min(username_length, size_t(RECONNECTION_PAYLOAD_SIZE)));
+	std::copy(this->username, this->username + std::min(username_length, size_t(RECONNECTION_PAYLOAD_SIZE)), packed_payload.begin());
 
 	return packed_payload;
 }
@@ -147,8 +146,7 @@ Bytes ValidCrcPayload::pack_payload() const {
 	size_t file_name_length = std::strlen(this->file_name);
 
 	// Copy the file_name into the vector
-	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(VALID_CRC_PAYLOAD_SIZE)));
-
+	std::copy(this->file_name, this->file_name + std::min(file_name_length, size_t(VALID_CRC_PAYLOAD_SIZE)), packed_payload.begin());
 	return packed_payload;
 }
 
@@ -174,7 +172,7 @@ Bytes InvalidCrcPayload::pack_payload() const {
 	size_t file_name_length = std::strlen(this->file_name);
 
 	// Copy the file_name into the vector
-	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(INVALID_CRC_PAYLOAD_SIZE)));
+	std::copy(this->file_name, this->file_name + std::min(file_name_length, size_t(INVALID_CRC_PAYLOAD_SIZE)), packed_payload.begin());
 
 	return packed_payload;
 }
@@ -195,8 +193,8 @@ Bytes InvalidCrcDonePayload::pack_payload() const {
 	// Get the actual length of the file name string (up to INVALID_CRC_DONE_PAYLOAD_SIZE)
 	size_t file_name_length = std::strlen(this->file_name);
 
-	// Copy the file_name into the vector
-	std::memcpy(packed_payload.data(), this->file_name, std::min(file_name_length, size_t(INVALID_CRC_DONE_PAYLOAD_SIZE)));
+	// Copy the file_name into the vector using std::copy
+	std::copy(this->file_name, this->file_name + std::min(file_name_length, size_t(INVALID_CRC_DONE_PAYLOAD_SIZE)), packed_payload.begin());
 
 	return packed_payload;
 }
@@ -240,9 +238,38 @@ const string& SendFilePayload::get_encrypted_file_content() const {
 }
 
 Bytes SendFilePayload::pack_payload() const {
-	Bytes packed_payload();
+	Bytes packed_payload(SENDING_FILE_PAYLOAD_SIZE_WITHOUT_FILE_SIZE + sizeof(this->encrypted_file_content), 0);
 
-	// TODO:: Add implementation
+	// Iterator for filling the vector
+	auto it = packed_payload.begin();
+
+	// Convert and copy content_size (4 bytes) in little-endian
+	uint32_t little_endian_content_size = htole32(this->content_size);
+
+	it = std::copy(reinterpret_cast<const uint8_t*>(&little_endian_content_size),
+		reinterpret_cast<const uint8_t*>(&little_endian_content_size) + sizeof(little_endian_content_size),it);
+
+	// Convert and copy orig_file_size (4 bytes) in little-endian
+	uint32_t little_endian_orig_file_size = htole32(this->orig_file_size);
+	it = std::copy(reinterpret_cast<const uint8_t*>(&little_endian_orig_file_size),
+		reinterpret_cast<const uint8_t*>(&little_endian_orig_file_size) + sizeof(little_endian_orig_file_size),it);
+
+	// Convert and copy packet_number (2 bytes) in little-endian
+	uint16_t little_endian_packet_number = htole16(this->packet_number);
+	it = std::copy(reinterpret_cast<const uint8_t*>(&little_endian_packet_number),
+		reinterpret_cast<const uint8_t*>(&little_endian_packet_number) + sizeof(little_endian_packet_number),it);
+
+	// Convert and copy total_packets (2 bytes) in little-endian
+	uint16_t little_endian_total_packets = htole16(this->total_packets);
+	it = std::copy(reinterpret_cast<const uint8_t*>(&little_endian_total_packets),
+		reinterpret_cast<const uint8_t*>(&little_endian_total_packets) + sizeof(little_endian_total_packets),it);
+
+	// Copy the file_name (MAX_USERNAME_LENGTH bytes)
+	it = std::copy(reinterpret_cast<const uint8_t*>(this->file_name),
+		reinterpret_cast<const uint8_t*>(this->file_name) + MAX_USERNAME_LENGTH,it);
+
+	// Copy the encrypted file content (its dynamic size)
+	it = std::copy(encrypted_file_content.begin(), encrypted_file_content.end(), it);
 
 	return packed_payload;
 }

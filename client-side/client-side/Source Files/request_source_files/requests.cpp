@@ -263,7 +263,14 @@ SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
 const SendFilePayload* SendFileRequest::getPayload() const {
 	return &payload;
 }
-//Bytes SendFileRequest::pack_request() { //TODO :NOT DONE
-//	Bytes ret(1);
-//	return ret(1)
-//}
+Bytes SendFileRequest::pack_request() const {
+	Bytes packed_header = this->getHeader().pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	Bytes request = packed_header + packed_payload;
+	return request;
+}
+
+int SendFileRequest::run(tcp::socket& sock) //TODO::::
+{
+	return 0;
+}

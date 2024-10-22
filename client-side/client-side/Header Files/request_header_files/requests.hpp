@@ -58,6 +58,7 @@ public:
 	ValidCrcRequest(RequestHeader header, ValidCrcPayload payload);
 	const ValidCrcPayload* getPayload() const override;
 
+//	Bytes pack_request() const;
 	int run(tcp::socket& sock);
 };
 
@@ -71,6 +72,7 @@ public:
 	InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload);
 	const InvalidCrcPayload* getPayload() const override;
 
+//	Bytes pack_request() const;
 	int run(tcp::socket& sock);
 };
 
@@ -84,6 +86,7 @@ public:
 	InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload);
 	const InvalidCrcDonePayload* getPayload() const override;
 
+// 	Bytes pack_request() const;
 	int run(tcp::socket& sock);
 };
 
@@ -97,6 +100,7 @@ public:
 	SendFileRequest(RequestHeader header, SendFilePayload payload);
 	const SendFilePayload* getPayload() const override;
 
+	Bytes pack_request() const;
 	int run(tcp::socket& sock);
 };
 
