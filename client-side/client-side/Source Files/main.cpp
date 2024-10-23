@@ -153,7 +153,7 @@ static void run_client(tcp::socket& sock, Client& client) {
 		operation_success = register_request.run(sock);
 
 		if (!operation_success) {
-			fatal_message_return("registration");
+			FATAL_MESSAGE_RETURN("registration");
 		}
 
 		// create rsa pair, save fields data into me.info and prev.key files, and send a sendingpublickey request.
@@ -170,7 +170,7 @@ static void run_client(tcp::socket& sock, Client& client) {
 		operation_success = sending_pub_key.run(sock);
 
 		if (!operation_success) {
-			fatal_message_return("sending public key");
+			FATAL_MESSAGE_RETURN("sending public key");
 		}
 
 		// get the encrypted aes key and decrypt it.
@@ -188,7 +188,7 @@ static void run_client(tcp::socket& sock, Client& client) {
 		operation_success = reconnection.run(sock);
 
 		if (!operation_success) {
-			fatal_message_return("reconnection");
+			FATAL_MESSAGE_RETURN("reconnection");
 		}
 
 		// decode the private key and create the decryptor.
@@ -220,18 +220,18 @@ static void run_client(tcp::socket& sock, Client& client) {
 
 		// get the cksum the server responded with.
 		std::string response_cksum = sendingfile.getcksum();
-		if (response_cksum == readfile(exe_dir_file_path(client.getFilePath()))) {
+		if (response_cksum == readfile(EXE_DIR_FILE_PATH(client.getFilePath()))) {
 			break;
 		}
 
 		// if the crc given by the server is incorrect, send sending crc again request - 901.
-		sendingcrcagain sendingcrcagain(client.getUuid(), Codes::sending_crc_again_c, PayloadSize::INVALID_CRC_PAYLOAD_SIZE, client.getFilePath().c_str());
+		sendingcrcagain sendingcrcagain(client.getUuid(), Codes::SENDING_CRC_AGAIN_CODE, PayloadSize::INVALID_CRC_PAYLOAD_SIZE, client.getFilePath().c_str());
 
 		// if the sending crc request did not succeed, add 1 to times crc sent counter.
 		times_crc_sent++;
 	}
 	if (file_error_cnt == MAX_REQUEST_FAILS) {
-		fatal_message_return("sending file");
+		FATAL_MESSAGE_RETURN("sending file");
 	}
 	else if (times_crc_sent == MAX_REQUEST_FAILS) {
 		invalidcrcdone invalid_crc_done(client.getUuid(), Codes::INVALID_CRC_DONE_CODE, PayloadSize::INVALID_CRC_DONE_PAYLOAD_SIZE, client.getFilePath().c_str());

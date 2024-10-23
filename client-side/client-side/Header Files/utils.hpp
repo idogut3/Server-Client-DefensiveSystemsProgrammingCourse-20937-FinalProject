@@ -69,7 +69,7 @@ constexpr int SPECIAL = 2;
 const std::string EXE_DIR = "client.cpp\\..\\..\\x64\\debug"; //Todo: change later cuz folders
 #define EXE_DIR_FILE_PATH(file_name) (EXE_DIR + "\\" + file_name)
 #define FATAL_MESSAGE_RETURN(type) \
-	cerr << "Fatal: " << type << " request failed.\n"; \
+	std::cerr << "Fatal: " << type << " request failed.\n"; \
 	return;
 
 #define TOTAL_PACKETS(content_size) \
