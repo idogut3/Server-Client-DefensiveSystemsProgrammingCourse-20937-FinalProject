@@ -67,46 +67,46 @@ static Client createClient() {
 
 }
 
-//static string read_me_info_file(Client& client) {
-//	string me_info_path = EXE_DIR_FILE_PATH("me.info");
-//	string line, client_name, client_id, private_key;
-//	int lines = 1;
-//	ifstream info_file(me_info_path);
-//
-//	if (!info_file.is_open()) {
-//		throw std::runtime_error("Error opening 'me.info' - exiting");
-//	}
-//
-//	while (getline(info_file, line)) {
-//		cout << "'" << line << "' " << line.length() << endl;
-//		switch (lines) {
-//		case 1:
-//			client_name = line;
-//			break;
-//		case 2:
-//			client_id = line;
-//			break;
-//		case 3:
-//			private_key = line;
-//			break;
-//		default:
-//			break;
-//		}
-//		lines++;
-//	}
-//
-//	if (lines != 4 || client_name.length() > MAX_NAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
-//		throw std::invalid_argument("Error: me.info contains invalid data.");
-//	}
-//
-//	UUID id = getUUIDFromString(client_id);
-//	client.setName(client_name);
-//	client.setUUID(id);
-//
-//	info_file.close();
-//	return private_key;
-//}
-//
+static string read_me_info_file(Client& client) {
+	string me_info_path = EXE_DIR_FILE_PATH("me.info");
+	string line, client_name, client_id, private_key;
+	int lines = 1;
+	ifstream info_file(me_info_path);
+
+	if (!info_file.is_open()) {
+		throw std::runtime_error("Error opening 'me.info' - exiting");
+	}
+
+	while (getline(info_file, line)) {
+		cout << "'" << line << "' " << line.length() << "\n";
+		switch (lines) {
+		case 1:
+			client_name = line;
+			break;
+		case 2:
+			client_id = line;
+			break;
+		case 3:
+			private_key = line;
+			break;
+		default:
+			break;
+		}
+		lines++;
+	}
+
+	if (lines != 4 || client_name.length() > MAX_USERNAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
+		throw std::invalid_argument("Error: me.info contains invalid data.");
+	}
+
+	UUID id = getUUIDFromString(client_id);
+	client.setName(client_name);
+	client.setUUID(id);
+
+	info_file.close();
+	return private_key;
+}
+
 //static void save_me_info(string name, UUID uuid, string private_key) {
 //	string my_uuid = uuids::to_string(uuid);
 //	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
