@@ -208,11 +208,11 @@ int ReconnectRequest::run(tcp::socket& sock) {
 		// Increment the i by 1 each iteration.
 		times_sent++;
 	}
-	// If the times_sent reached MAX_REQUEST_FAILS, returning false
+	// If the times_sent reached MAX_REQUEST_FAILS, returning FAILURE
 	if (times_sent >= MAX_REQUEST_FAILS) {
 		return FAILURE;
 	}
-	// If the the SendPublicKeyRequest::run succeeded, return true
+	// If the the SendPublicKeyRequest::run succeeded, return SUCCESS
 	return SUCCESS;
 }
 
@@ -383,10 +383,10 @@ int SendFileRequest::run(tcp::socket& sock)
 		times_sent++;
 	}
 
-	// If the times_sent reached MAX_REQUEST_FAILS, returning false
+	// If the times_sent reached MAX_REQUEST_FAILS, returning FAILURE
 	if (times_sent >= MAX_REQUEST_FAILS) {
 		return FAILURE;
 	}
-	// If the the SendPublicKeyRequest::run succeeded, return true
+	// If the the SendPublicKeyRequest::run succeeded, return SUCCESS
 	return SUCCESS;
 }
