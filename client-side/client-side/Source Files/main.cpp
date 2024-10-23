@@ -28,7 +28,7 @@ static Client createClient() {
 	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
 	string line, ip_port, client_name, client_file_path;
 	ifstream transfer_info_file(transfer_path);
-	
+
 	int lines = 1;
 	Client client;
 
@@ -62,7 +62,7 @@ static Client createClient() {
 		throw std::invalid_argument("Error: transfer.info contains invalid data");
 	}
 
-	transfer_info_file.close(); 
+	transfer_info_file.close();
 	return client;
 
 }
@@ -146,11 +146,10 @@ static void run_client(tcp::socket& sock, Client& client) {
 	string private_key, decrypted_aes_key;
 
 	// if me.info does not exist, send registration request.
-		 {
-
+	if (!(std::filesystem::exists(EXE_DIR_FILE_PATH("me.info")))) {
 		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
 		RegistrationPayload registration_payload(client.getName().c_str());
-		RegisterRequest register_request(request_header, registration_payload)
+		RegisterRequest register_request(request_header, registration_payload);
 		operation_success = register_request.run(sock);
 
 		if (!operation_success) {
@@ -167,7 +166,7 @@ static void run_client(tcp::socket& sock, Client& client) {
 		save_me_info(client.getName(), client.getUuid(), private_key);
 		save_priv_key_file(private_key);
 
-		sendingpublickey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_CODE, payloadsize::sending_public_key_p, client.getname().c_str(), public_key.c_str());
+		sendingpublickey sending_pub_key(client.getUuid(), Codes::SENDING_PUBLIC_KEY_CODE, PayloadSize::SENDING_PUBLIC_KEY_PAYLOAD_SIZE, client.getName().c_str(), public_key.c_str());
 		operation_success = sending_pub_key.run(sock);
 
 		if (!operation_success) {
@@ -178,7 +177,9 @@ static void run_client(tcp::socket& sock, Client& client) {
 		string encrypted_aes_key = sending_pub_key.getencryptedaeskey();
 		decrypted_aes_key = privatekeywrapper.decrypt(encrypted_aes_key);
 	}
-	else { // if me.info does exist, read id and send reconnection request.
+
+	else 
+	{ // if me.info does exist, read id and send reconnection request.
 		// read the fields from the client.
 		string key_base64 = read_from_files(client);
 
@@ -237,9 +238,10 @@ static void run_client(tcp::socket& sock, Client& client) {
 		invalid_crc_done.run(sock);
 	}
 	else {
-		validcrc valid_crc(client.getUuid(), Codes::VALID_CRC_CODE, PayloadSize ::VALID_CRC_PAYLOAD_SIZE, client.getFilePath().c_str());
+		validcrc valid_crc(client.getUuid(), Codes::VALID_CRC_CODE, PayloadSize::VALID_CRC_PAYLOAD_SIZE, client.getFilePath().c_str());
 	}
 }
+
 
 int main()
 {
