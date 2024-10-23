@@ -27,6 +27,8 @@ public:
     const char* getUsername() const;
     const char* getPublicKey() const;
 
+
+    const char* getEncryptedAESKey() const;
     void setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length);
 
     Bytes pack_payload() const override;

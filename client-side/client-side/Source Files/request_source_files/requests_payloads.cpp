@@ -52,6 +52,10 @@ const char* SendPublicKeyPayload::getPublicKey() const {
 	return public_key;
 }
 
+const char* SendPublicKeyPayload::getEncryptedAESKey() const {
+	return encrypted_aes_key;
+}
+
 void SendPublicKeyPayload::setEncryptedAESKey(const char* encrypted_aes_key, const size_t key_length) {
 	if (key_length <= ENCRYPTED_AES_KEY_LENGTH) {
 		std::copy(encrypted_aes_key, encrypted_aes_key + key_length, this->encrypted_aes_key);

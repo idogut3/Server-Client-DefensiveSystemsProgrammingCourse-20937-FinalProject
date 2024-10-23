@@ -92,5 +92,8 @@ bool are_uuids_equal(const Bytes first, const UUID second);
 uint32_t htole32(uint32_t x);
 uint16_t htole16(uint16_t x);
 
+string fileToString(std::string file_path);
+
+
 
 #endif

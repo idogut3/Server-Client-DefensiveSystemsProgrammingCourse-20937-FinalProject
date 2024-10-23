@@ -21,7 +21,7 @@ public:
 
 	string getAddress() const;
 	string getPort() const;
-	string getName() const;
+	string getName();
 	string getFilePath() const;
 	UUID getUuid() const;
 	void setupClient(const string& ip, const string& port, const string& name, const string& filePath);

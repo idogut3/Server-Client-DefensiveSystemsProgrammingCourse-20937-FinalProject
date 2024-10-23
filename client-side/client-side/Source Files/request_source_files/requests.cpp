@@ -74,6 +74,9 @@ const SendPublicKeyPayload* SendPublicKeyRequest::getPayload() const {
 	return &payload;  // Returning a pointer to payload
 }
 
+const char* SendPublicKeyRequest::getEncryptedAESKey() const {
+	return this->getEncryptedAESKey();
+}
 void SendPublicKeyRequest::updateEncryptedAESKey(const Bytes& encrypted_aes_key) {
 	this->payload.setEncryptedAESKey(reinterpret_cast<const char*>(encrypted_aes_key.data()), encrypted_aes_key.size());
 }

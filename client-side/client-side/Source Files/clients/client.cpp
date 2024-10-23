@@ -33,7 +33,7 @@ string Client::getPort() const {
 	return this->port;
 }
 
-string Client::getName() const {
+string Client::getName() {
 	return this->name;
 }
 

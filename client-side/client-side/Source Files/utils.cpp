@@ -117,3 +117,13 @@ uint16_t htole16(uint16_t x) {
 	return ((x >> 8) & 0x00FF) |
 		((x << 8) & 0xFF00);
 }
+
+
+string fileToString(std::string file_path) {
+	string file_path = EXE_DIR_FILE_PATH(file_name);
+	//if (std::filesystem::exists(file_path)) {
+	//
+	//
+	//}
+	return "";
+}
