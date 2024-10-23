@@ -226,10 +226,12 @@ const ValidCrcPayload* ValidCrcRequest::getPayload() const {
 	return &payload;
 }
 
-//Bytes ValidCrcRequest::pack_request() { //TODO :NOT DONE
-//	Bytes ret(1);
-//	return ret(1)
-//}
+Bytes ValidCrcRequest::pack_request() const { //TODO :NOT DONE
+	Bytes packed_header = this->getHeader().pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	Bytes request = packed_header + packed_payload;
+	return request;
+}
 
 
 InvalidCrcRequest::InvalidCrcRequest(RequestHeader header, InvalidCrcPayload payload)
@@ -239,10 +241,12 @@ const InvalidCrcPayload* InvalidCrcRequest::getPayload() const {
 	return &payload;
 }
 
-//Bytes InvalidCrcRequest::pack_request() { //TODO :NOT DONE
-//	Bytes ret(1);
-//	return ret(1)
-//}
+Bytes InvalidCrcRequest::pack_request() const { //TODO :NOT DONE
+	Bytes packed_header = this->getHeader().pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	Bytes request = packed_header + packed_payload;
+	return request;
+}
 
 InvalidCrcDoneRequest::InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload)
 	: Request(header), payload(payload) {}
@@ -251,10 +255,12 @@ const InvalidCrcDonePayload* InvalidCrcDoneRequest::getPayload() const {
 	return &payload;
 }
 
-//Bytes InvalidCrcDoneRequest::pack_request() { //TODO :NOT DONE
-//	Bytes ret(1);
-//	return ret(1)
-//}
+Bytes InvalidCrcDoneRequest::pack_request() const { //TODO :NOT DONE
+	Bytes packed_header = this->getHeader().pack_header();
+	Bytes packed_payload = this->getPayload()->pack_payload();
+	Bytes request = packed_header + packed_payload;
+	return request;
+}
 
 
 SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
