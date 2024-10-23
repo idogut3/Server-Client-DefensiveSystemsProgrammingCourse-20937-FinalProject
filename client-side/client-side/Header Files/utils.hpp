@@ -6,6 +6,7 @@
 #include <string>
 #include <string.h>    
 #include <vector>
+#include <filesystem>
 
 #include <boost/asio.hpp>
 #include <boost/uuid/uuid.hpp>
