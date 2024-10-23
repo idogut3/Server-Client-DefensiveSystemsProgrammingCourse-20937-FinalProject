@@ -118,7 +118,7 @@ int SendPublicKeyRequest::run(tcp::socket& sock) {
 			std::copy(response_payload.begin(), response_payload.begin() + UUID_SIZE, payload_uuid.begin());
 
 			if (!are_uuids_equal(payload_uuid, this->getHeader().getUUID())) {
-				throw std::invalid_argument("server responded with an error.");
+				throw std::invalid_argument("server responded with an error");
 			}
 
 			updateEncryptedAESKey(response_payload);
@@ -195,7 +195,7 @@ int ReconnectRequest::run(tcp::socket& sock) {
 			std::copy(response_payload.begin(), response_payload.begin() + UUID_SIZE, payload_uuid.begin());
 
 			if (!are_uuids_equal(payload_uuid, this->getHeader().getUUID())) {
-				throw std::invalid_argument("server responded with an error.");
+				throw std::invalid_argument("server responded with an error");
 			}
 
 			// Copy the encrypted aes key content from the response_payload vector into the parameter encrypted_aes_key, then break from the loop.
@@ -234,7 +234,6 @@ Bytes ValidCrcRequest::pack_request() const {
 }
 
 int ValidCrcRequest::run(tcp::socket& sock) {
-	// Pack request fields into vector and initialize parameter times_sent to 0.
 	int times_sent = 1;
 	Bytes request = pack_request();
 
@@ -265,7 +264,6 @@ int ValidCrcRequest::run(tcp::socket& sock) {
 			if (!are_uuids_equal(payload_uuid, this->getHeader().getUUID())) {
 				throw std::invalid_argument("server responded with an error");
 			}
-			Bytes payload_file_name(MAX_FILE_NAME_LENGTH);
 
 			// If the id provided by the server is correct, break from the loop and return SUCCESS.
 			break;
@@ -299,6 +297,24 @@ Bytes InvalidCrcRequest::pack_request() const {
 	return request;
 }
 
+int InvalidCrcRequest::run(tcp::socket& sock) {
+	// Pack request fields into vector.
+	Bytes request = pack_request();
+
+	try {
+		// Send the request to the server via the provided socket.
+		boost::asio::write(sock, boost::asio::buffer(request));
+	}
+	catch (std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		return FAILURE;
+	}
+
+	return SUCCESS;
+}
+
+
+
 InvalidCrcDoneRequest::InvalidCrcDoneRequest(RequestHeader header, InvalidCrcDonePayload payload)
 	: Request(header), payload(payload) {}
 
@@ -312,6 +328,56 @@ Bytes InvalidCrcDoneRequest::pack_request() const {
 	Bytes request = packed_header + packed_payload;
 	return request;
 }
+
+int InvalidCrcDoneRequest::run(tcp::socket& sock) {
+	int times_sent = 1;
+	Bytes request = pack_request();
+
+	while (times_sent <= MAX_REQUEST_FAILS) {
+		try {
+			// Send the request to the server via the provided socket.
+			boost::asio::write(sock, boost::asio::buffer(request));
+
+			// Receive header from the server, get response code and payload_size
+			Bytes response_header(RESPONSE_HEADER_SIZE);
+			boost::asio::read(sock, boost::asio::buffer(response_header, RESPONSE_HEADER_SIZE));
+			uint16_t response_code = extractCodeFromResponseHeader(response_header);
+			uint32_t response_payload_size = extractPayloadSizeFromResponseHeader(response_header);
+
+			// Receive payload from the server, save it's length in a parameter length.
+			Bytes response_payload(response_payload_size);
+			size_t length = boost::asio::read(sock, boost::asio::buffer(response_payload, response_payload_size));
+
+			// If the code is not success, the payload_size for the code is not the same as the size received in the header, or the length of the payload is not the wanted length, print error.
+			if (response_code != Codes::FILE_RECEIVED_CRC_CODE || response_payload_size != PayloadSize::FILE_RECEIVED_CRC_PAYLOAD_SIZE || length != response_payload_size) {
+				throw std::invalid_argument("server responded with an error");
+			}
+
+			//// Copy the id from the payload, and check if it's the correct client id.
+			Bytes payload_uuid(UUID_SIZE);
+			std::copy(response_payload.begin(), response_payload.begin() + UUID_SIZE, payload_uuid.begin());
+
+			if (!are_uuids_equal(payload_uuid, this->getHeader().getUUID())) {
+				throw std::invalid_argument("server responded with an error");
+			}
+
+			// If the id provided by the server is correct, break from the loop and return SUCCESS.
+			break;
+		}
+		catch (std::exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		// Increment by 1 each iteration.
+		times_sent++;
+	}
+	// If reached 3, return FAILURE.
+	if (times_sent >= MAX_REQUEST_FAILS) {
+		return FAILURE;
+	}
+	// If the client succeeded, return SUCCESS.
+	return SUCCESS;
+}
+
 
 
 SendFileRequest::SendFileRequest(RequestHeader header, SendFilePayload payload)
