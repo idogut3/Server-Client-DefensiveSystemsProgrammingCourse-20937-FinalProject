@@ -9,35 +9,35 @@ Client::Client() {
 	this->uuid = NIL_UUID;
 }
 
-void Client::setAddress(std::string address) {
+void Client::setAddress(string address) {
 	this->address = address;
 }
-void Client::setPort(std::string port) {
+void Client::setPort(string port) {
 	this->port = port;
 }
-void Client::setName(std::string name) {
+void Client::setName(string name) {
 	this->name = name;
 }
-void Client::setFilePath(std::string file_path) {
+void Client::setFilePath(string file_path) {
 	this->file_path = file_path;
 }
 void Client::setUUID(UUID uuid) {
 	this->uuid = uuid;
 }
 
-std::string Client::getAddress() const {
+string Client::getAddress() const {
 	return this->address;
 }
 
-std::string Client::getPort() const {
+string Client::getPort() const {
 	return this->port;
 }
 
-std::string Client::getName() const {
+string Client::getName() const {
 	return this->name;
 }
 
-std::string Client::getFilePath() const {
+string Client::getFilePath() const {
 	return this->file_path;
 }
 
@@ -45,10 +45,9 @@ UUID Client::getUuid() const {
 	return this->uuid;
 }
 
-Client Client::setupClient(Client client, const std::string& ip, int port, const std::string& name, const std::string& filePath) {
-	client.setAddress(ip);
-	client.setPort(port);
-	client.setName(name);
-	client.setFilePath(filePath);
-	return client;
+void Client::setupClient(const string& ip, const string& port, const string& name, const string& filePath) {
+	this->setAddress(ip);
+	this->setPort(port);
+	this->setName(name);
+	this->setFilePath(filePath);
 }

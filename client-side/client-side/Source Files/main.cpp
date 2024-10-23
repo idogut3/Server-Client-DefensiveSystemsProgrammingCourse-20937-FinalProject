@@ -1,13 +1,13 @@
-#include "client-side\Header Files\utils.hpp"
 #include "Header Files\request_header_files\request.hpp"
 #include "Header Files\request_header_files\requests.hpp"
 #include "Header Files\request_header_files\requests_payloads.hpp"
+#include "../Header Files/utils.hpp"
+#include "../Header Files/clients/client.hpp"
 
-
-static bool transferValidation(client& client, string ip_port, string name, string file_path) {
+static bool transferValidation(Client& client, string ip_port, string name, string file_path) {
 	size_t colon_postion = ip_port.find(':');
 
-	if (colon_postion == string::npos || name.length() > MAX_NAME_LENGTH || name.length() == 0 || file_path.length() == 0) {
+	if (colon_postion == string::npos || name.length() > MAX_USERNAME_LENGTH || name.length() == 0 || file_path.length() == 0) {
 		return false;
 	}
 
@@ -19,126 +19,126 @@ static bool transferValidation(client& client, string ip_port, string name, stri
 		return false;
 	}
 
-	setupClient(client, ip, port, name, file_path);
+	client.setupClient(ip, port, name, file_path);
 
 	return true;
 }
 
-static Client createClient() {
-	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
-	string line, ip_port, client_name, client_file_path;
-	ifstream transfer_info_file(transfer_path);
-	
-	int lines = 1;
-	Client client;
-
-	if (!transfer_info_file.is_open()) {
-		throw std::runtime_error("Error opening 'transfer.info' - exiting");
-	}
-
-	while (getline(transfer_info_file, line)) {
-		cout << "'" << line << "' " << line.length() << endl;
-		switch (lines) {
-		case 1:
-			ip_port = line;
-			break;
-		case 2:
-			client_name = line;
-			break;
-		case 3:
-			client_file_path = line;
-			break;
-		default:
-			break;
-		}
-		lines++;
-	}
-
-	if (lines != 4) {
-		throw std::invalid_argument("Error: transfer.info contains too many lines / not enough lines");
-	}
-
-	if (!transferValidation(client, ip_port, client_name, client_file_path)) {
-		throw std::invalid_argument("Error: transfer.info contains invalid data");
-	}
-
-	transfer_info_file.close(); 
-	return client;
-
-}
-
-static string read_me_info_file(Client& client) {
-	string me_info_path = EXE_DIR_FILE_PATH("me.info");
-	string line, client_name, client_id, private_key;
-	int lines = 1;
-	ifstream info_file(me_info_path);
-
-	if (!info_file.is_open()) {
-		throw std::runtime_error("Error opening 'me.info' - exiting");
-	}
-
-	while (getline(info_file, line)) {
-		cout << "'" << line << "' " << line.length() << endl;
-		switch (lines) {
-		case 1:
-			client_name = line;
-			break;
-		case 2:
-			client_id = line;
-			break;
-		case 3:
-			private_key = line;
-			break;
-		default:
-			break;
-		}
-		lines++;
-	}
-
-	if (lines != 4 || client_name.length() > MAX_NAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
-		throw std::invalid_argument("Error: me.info contains invalid data.");
-	}
-
-	UUID id = getUUIDFromString(client_id);
-	client.setName(client_name);
-	client.setUUID(id);
-
-	info_file.close();
-	return private_key;
-}
-
-static void save_me_info(string name, UUID uuid, string private_key) {
-	string my_uuid = uuids::to_string(uuid);
-	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
-	string base64_private_key = Base64Wrapper::encode(private_key);
-
-	string path_info = EXE_DIR_FILE_PATH("me.info");
-
-	ofstream info_file(path_info);
-
-	if (!info_file.is_open()) {
-		throw std::runtime_error("Error opening the 'me.info' - exiting");
-	}
-
-	// Writing to info file
-	info_file << name << endl << id << endl << base64_private_key << endl;
-
-	info_file.close();
-}
-static void save_priv_key_file(string private_key) {
-	// Encode the private key to base64 and open files
-	string base64_private_key = Base64Wrapper::encode(private_key);
-	string path_key = EXE_DIR_FILE_PATH("priv.key");
-
-	ofstream private_key_file(path_key);
-
-	if (!private_key_file.is_open()) {
-		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
-	}
-	// Writing to priv.key file
-	private_key_file << base64_private_key << endl;
-	private_key_file.close();
-}
+//static Client createClient() {
+//	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
+//	string line, ip_port, client_name, client_file_path;
+//	ifstream transfer_info_file(transfer_path);
+//	
+//	int lines = 1;
+//	Client client;
+//
+//	if (!transfer_info_file.is_open()) {
+//		throw std::runtime_error("Error opening 'transfer.info' - exiting");
+//	}
+//
+//	while (getline(transfer_info_file, line)) {
+//		cout << "'" << line << "' " << line.length() << endl;
+//		switch (lines) {
+//		case 1:
+//			ip_port = line;
+//			break;
+//		case 2:
+//			client_name = line;
+//			break;
+//		case 3:
+//			client_file_path = line;
+//			break;
+//		default:
+//			break;
+//		}
+//		lines++;
+//	}
+//
+//	if (lines != 4) {
+//		throw std::invalid_argument("Error: transfer.info contains too many lines / not enough lines");
+//	}
+//
+//	if (!transferValidation(client, ip_port, client_name, client_file_path)) {
+//		throw std::invalid_argument("Error: transfer.info contains invalid data");
+//	}
+//
+//	transfer_info_file.close(); 
+//	return client;
+//
+//}
+//
+//static string read_me_info_file(Client& client) {
+//	string me_info_path = EXE_DIR_FILE_PATH("me.info");
+//	string line, client_name, client_id, private_key;
+//	int lines = 1;
+//	ifstream info_file(me_info_path);
+//
+//	if (!info_file.is_open()) {
+//		throw std::runtime_error("Error opening 'me.info' - exiting");
+//	}
+//
+//	while (getline(info_file, line)) {
+//		cout << "'" << line << "' " << line.length() << endl;
+//		switch (lines) {
+//		case 1:
+//			client_name = line;
+//			break;
+//		case 2:
+//			client_id = line;
+//			break;
+//		case 3:
+//			private_key = line;
+//			break;
+//		default:
+//			break;
+//		}
+//		lines++;
+//	}
+//
+//	if (lines != 4 || client_name.length() > MAX_NAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
+//		throw std::invalid_argument("Error: me.info contains invalid data.");
+//	}
+//
+//	UUID id = getUUIDFromString(client_id);
+//	client.setName(client_name);
+//	client.setUUID(id);
+//
+//	info_file.close();
+//	return private_key;
+//}
+//
+//static void save_me_info(string name, UUID uuid, string private_key) {
+//	string my_uuid = uuids::to_string(uuid);
+//	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
+//	string base64_private_key = Base64Wrapper::encode(private_key);
+//
+//	string path_info = EXE_DIR_FILE_PATH("me.info");
+//
+//	ofstream info_file(path_info);
+//
+//	if (!info_file.is_open()) {
+//		throw std::runtime_error("Error opening the 'me.info' - exiting");
+//	}
+//
+//	// Writing to info file
+//	info_file << name << endl << id << endl << base64_private_key << endl;
+//
+//	info_file.close();
+//}
+//static void save_priv_key_file(string private_key) {
+//	// Encode the private key to base64 and open files
+//	string base64_private_key = Base64Wrapper::encode(private_key);
+//	string path_key = EXE_DIR_FILE_PATH("priv.key");
+//
+//	ofstream private_key_file(path_key);
+//
+//	if (!private_key_file.is_open()) {
+//		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
+//	}
+//	// Writing to priv.key file
+//	private_key_file << base64_private_key << endl;
+//	private_key_file.close();
+//}
 
 
 //static void run_client(tcp::socket& sock, Client& client) {
