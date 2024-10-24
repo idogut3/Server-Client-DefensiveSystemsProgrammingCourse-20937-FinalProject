@@ -1,0 +1,292 @@
+#include "request.hpp"
+#include "requests.hpp"
+#include "requests_payloads.hpp"
+#include "utils.hpp"
+#include "client.hpp"
+#include "Base64Wrapper.hpp"
+#include "RSAWrapper.hpp"
+#include "cksum.hpp"
+
+static bool transferValidation(Client& client, string ip_port, string name, string file_path) {
+	size_t colon_postion = ip_port.find(':');
+
+	if (colon_postion == string::npos || name.length() > MAX_USERNAME_LENGTH || name.length() == 0 || file_path.length() == 0) {
+		return false;
+	}
+
+	string ip = ip_port.substr(0, colon_postion);
+	string port = ip_port.substr(colon_postion + 1);
+
+	bool is_port_valid = is_integer(port);
+	if (!is_port_valid) {
+		return false;
+	}
+
+	client.setupClient(ip, port, name, file_path);
+
+	return true;
+}
+
+static Client createClient() {
+	string transfer_path = EXE_DIR_FILE_PATH("transfer.info");
+	string line, ip_port, client_name, client_file_path;
+	ifstream transfer_info_file(transfer_path);
+
+	int lines = 1;
+	Client client;
+
+	if (!transfer_info_file.is_open()) {
+		throw std::runtime_error("Error opening 'transfer.info' - exiting");
+	}
+
+	while (getline(transfer_info_file, line)) {
+		cout << "'" << line << "' " << line.length() << "\n";
+		switch (lines) {
+		case 1:
+			ip_port = line;
+			break;
+		case 2:
+			client_name = line;
+			break;
+		case 3:
+			client_file_path = line;
+			break;
+		default:
+			break;
+		}
+		lines++;
+	}
+
+	if (lines != 4) {
+		throw std::invalid_argument("Error: transfer.info contains too many lines / not enough lines");
+	}
+
+	if (!transferValidation(client, ip_port, client_name, client_file_path)) {
+		throw std::invalid_argument("Error: transfer.info contains invalid data");
+	}
+
+	transfer_info_file.close();
+	return client;
+
+}
+
+static string use_me_info_file(Client& client) {
+	string me_info_path = EXE_DIR_FILE_PATH("me.info");
+	string line, client_name, client_id, private_key;
+	int lines = 1;
+	ifstream info_file(me_info_path);
+
+	if (!info_file.is_open()) {
+		throw std::runtime_error("Error opening 'me.info' - exiting");
+	}
+
+	while (getline(info_file, line)) {
+		cout << "'" << line << "' " << line.length() << "\n";
+		switch (lines) {
+		case 1:
+			client_name = line;
+			break;
+		case 2:
+			client_id = line;
+			break;
+		case 3:
+			private_key = line;
+			break;
+		default:
+			break;
+		}
+		lines++;
+	}
+
+	if (lines != 4 || client_name.length() > MAX_USERNAME_LENGTH || client_name.length() == 0 || client_id.length() != HEX_ID_LENGTH || private_key.length() == 0) {
+		throw std::invalid_argument("Error: me.info contains invalid data.");
+	}
+
+	UUID id = getUUIDFromString(client_id);
+	client.setName(client_name);
+	client.setUUID(id);
+
+	info_file.close();
+	return private_key;
+}
+
+static void save_me_info(string name, UUID uuid, string private_key) {
+	string my_uuid = uuids::to_string(uuid);
+	my_uuid.erase(remove(my_uuid.begin(), my_uuid.end(), '-'), my_uuid.end()); // Remove '-' from the string
+	string base64_private_key = Base64Wrapper::encode(private_key);
+
+	string path_info = EXE_DIR_FILE_PATH("me.info");
+
+	ofstream info_file(path_info);
+
+	if (!info_file.is_open()) {
+		throw std::runtime_error("Error opening the 'me.info' - exiting");
+	}
+
+	// Writing to info file
+	info_file << name << "\n" << my_uuid << "\n" << base64_private_key << "\n";
+
+	info_file.close();
+}
+static void save_priv_key_file(string private_key) {
+	// Encode the private key to base64 and open files
+	string base64_private_key = Base64Wrapper::encode(private_key);
+	string path_key = EXE_DIR_FILE_PATH("priv.key");
+
+	ofstream private_key_file(path_key);
+
+	if (!private_key_file.is_open()) {
+		throw std::runtime_error("Error opening the 'priv.key' file, aborting program.");
+	}
+	// Writing to priv.key file
+	private_key_file << base64_private_key << "\n";
+	private_key_file.close();
+}
+
+
+static void run_client(tcp::socket& sock, Client& client) {
+	int operation_success;
+	string private_key, decrypted_aes_key;
+
+	// if me.info does not exist, send registration request.
+	if (!(std::filesystem::exists(EXE_DIR_FILE_PATH("me.info")))) {
+		RequestHeader request_header(client.getUuid(), Codes::REGISTRATION_CODE, PayloadSize::REGISTRATION_PAYLOAD_SIZE);
+		RegistrationPayload registration_payload(client.getName().c_str());
+		RegisterRequest register_request(request_header, registration_payload);
+		operation_success = register_request.run(sock);
+
+		if (!operation_success) {
+			FATAL_MESSAGE_RETURN("Register");
+		}
+
+		// create rsa pair, save fields data into me.info and prev.key files, and send a sendingpublickey request.
+		RSAPrivateWrapper rsa_wrapper;
+
+		string public_key = rsa_wrapper.getPublicKey();
+		private_key = rsa_wrapper.getPrivateKey();
+
+		// saving files as required for future 
+		save_me_info(client.getName(), client.getUuid(), private_key);
+		save_priv_key_file(private_key);
+
+		RequestHeader send_public_key_request_header(client.getUuid(), Codes::SENDING_PUBLIC_KEY_CODE, PayloadSize::SENDING_PUBLIC_KEY_PAYLOAD_SIZE);
+		const char* username = client.getName().c_str();
+		SendPublicKeyPayload send_public_key_request_payload(username, public_key.c_str());
+
+		SendPublicKeyRequest send_public_key_request(send_public_key_request_header, send_public_key_request_payload);
+
+		operation_success = send_public_key_request.run(sock);
+
+		if (operation_success == FAILURE) {
+			FATAL_MESSAGE_RETURN("sending public key");
+		}
+
+		// Get the encrypted aes key and decrypt it.
+		string encrypted_aes_key = send_public_key_request.getEncryptedAESKey();
+		decrypted_aes_key = rsa_wrapper.decrypt(encrypted_aes_key);
+	}
+
+	else {
+		// if me.info does exist, read id and send reconnection request.
+		// read the fields from the client.
+		string key_base64 = use_me_info_file(client);
+
+		// send reconnection request to the server
+		RequestHeader reconnect_request_header(client.getUuid(), Codes::RECONNECTION_CODE, PayloadSize::RECONNECTION_PAYLOAD_SIZE);
+
+		const char* username = client.getName().c_str();
+		ReconnectionPayload reconnect_request_payload(username);
+
+		ReconnectRequest reconnect_request(reconnect_request_header, reconnect_request_payload);
+		operation_success = reconnect_request.run(sock);
+
+		if (operation_success == FAILURE) {
+			FATAL_MESSAGE_RETURN("Reconnect");
+		}
+
+		// decode the private key and create the decryptor
+		private_key = Base64Wrapper::decode(key_base64);
+		RSAPrivateWrapper rsa_wrapper(private_key);
+
+		// get the encrypted aes key and decrypt it
+		string encrypted_aes_key = reconnect_request.getPayload()->getEncryptedAESKey();
+		decrypted_aes_key = rsa_wrapper.decrypt(encrypted_aes_key);
+	}
+
+
+	AESWrapper aes_key_wrapper(reinterpret_cast<const unsigned char*>(decrypted_aes_key.c_str()), decrypted_aes_key.size());
+	int file_error_count = 0, times_crc_sent = 0;
+
+	while (file_error_count != MAX_REQUEST_FAILS && times_crc_sent != MAX_REQUEST_FAILS) {
+		// get the file's content, save the encrypted content and save the sizes of both.
+		std::string content = fileToString(client.getFilePath());
+		std::string encrypted_content = aes_key_wrapper.encrypt(content.c_str(), content.length());
+		uint32_t content_size = encrypted_content.length();
+		uint32_t orig_file_size = content.length();
+
+		// save the total packets and send the sending file request to the server.
+		uint16_t total_packs = TOTAL_PACKETS(content_size);
+		RequestHeader send_file_request_header(client.getUuid(), Codes::SENDING_FILE_CODE, PayloadSize::SEND_FILE_PAYLOAD_SIZE);
+
+		const char* file_name = client.getName().c_str();
+		SendFilePayload send_file_request_payload(content_size, orig_file_size, total_packs , file_name, encrypted_content);
+
+		SendFileRequest send_file_request(send_file_request_header, send_file_request_payload);
+
+		operation_success = send_file_request.run(sock);
+		// if the sending file request did not succeed, add 1 to sending file error counter and continue the loop.
+		if (operation_success == FAILURE) {
+			file_error_count++;
+			continue;
+		}
+
+		// get the cksum the server responded with.
+		std::string response_cksum = std::to_string(send_file_request.getPayload()->getCksum());
+		if (response_cksum == readfile(EXE_DIR_FILE_PATH(client.getFilePath()))) {
+			break;
+		}
+
+		// if the crc given by the server is incorrect, send sending crc again request - 901.
+		RequestHeader invalid_crc_request_header(client.getUuid(), Codes::SENDING_CRC_AGAIN_CODE, PayloadSize::INVALID_CRC_PAYLOAD_SIZE);
+		InvalidCrcPayload invalid_crc_request_payload(client.getName().c_str());
+		InvalidCrcRequest invalid_crc_request(invalid_crc_request_header, invalid_crc_request_payload);
+
+		invalid_crc_request.run(sock);
+		// if the sending crc request did not succeed, add 1 to times crc sent counter.
+		times_crc_sent++;
+	}
+	if (file_error_count == MAX_REQUEST_FAILS) {
+		FATAL_MESSAGE_RETURN("Send File");
+	}
+	else if (times_crc_sent == MAX_REQUEST_FAILS) {
+		RequestHeader invalid_crc_done_request_header(client.getUuid(), Codes::INVALID_CRC_DONE_CODE, PayloadSize::INVALID_CRC_DONE_PAYLOAD_SIZE);
+		InvalidCrcDonePayload invalid_crc_done_request_payload(client.getName().c_str());
+		InvalidCrcDoneRequest invalid_crc_done_request(invalid_crc_done_request_header, invalid_crc_done_request_payload);
+
+		invalid_crc_done_request.run(sock);
+	}
+	else {
+		RequestHeader valid_crc_request_header(client.getUuid(), Codes::VALID_CRC_CODE, PayloadSize::VALID_CRC_PAYLOAD_SIZE);
+		ValidCrcPayload valid_crc_request_payload(client.getName().c_str());
+		ValidCrcRequest valid_crc_request(valid_crc_request_header, valid_crc_request_payload);
+	}
+}
+
+
+int main()
+{
+	try {
+		Client client = createClient();
+
+		boost::asio::io_context io_context;
+		tcp::socket sock(io_context);
+		tcp::resolver resolver(io_context);
+		boost::asio::connect(sock, resolver.resolve(client.getAddress(), client.getPort()));
+
+		run_client(sock, client);
+	}
+	catch (std::exception& e) {
+		std::cerr << e.what() << std::endl;
+	}
+}
+

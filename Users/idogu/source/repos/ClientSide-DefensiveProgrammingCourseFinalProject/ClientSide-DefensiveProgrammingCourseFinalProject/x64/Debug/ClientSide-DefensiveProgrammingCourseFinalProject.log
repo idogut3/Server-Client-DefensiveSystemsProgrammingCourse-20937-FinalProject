@@ -1,0 +1,42 @@
+﻿  AESWrapper.cpp
+  Base64Wrapper.cpp
+  cksum.cpp
+  client.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+  main.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\main.cpp(217,118): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\main.cpp(223,90): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\main.cpp(224,25): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\main.cpp(225,27): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\main.cpp(228,24): warning C4267: 'initializing': conversion from 'size_t' to 'uint16_t', possible loss of data
+  request.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+  requests.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+  requests_payloads.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+  RSAWrapper.cpp
+  utils.cpp
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
+  Generating Code...
+C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\ClientSide-DefensiveProgrammingCourseFinalProject\requests.cpp(79,1): warning C4717: 'SendPublicKeyRequest::getEncryptedAESKey': recursive on all control paths, function will cause runtime stack overflow
+  ClientSide-DefensiveProgrammingCourseFinalProject.vcxproj -> C:\Users\idogu\source\repos\ClientSide-DefensiveProgrammingCourseFinalProject\x64\Debug\ClientSide-DefensiveProgrammingCourseFinalProject.exe
